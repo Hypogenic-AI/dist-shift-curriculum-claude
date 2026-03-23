@@ -1,0 +1,33 @@
+idea:
+  title: Distribution Shift Curriculum
+  domain: machine_learning
+  hypothesis: 'Introducing regular distribution shifts during pre-training, while
+    randomizing other factors, will encourage the model to generalize more effectively
+    to new distributions. By withholding certain temporal segments or subsets of documents
+    (e.g., specific legal domains like maritime law), the model may learn to extrapolate
+    quickly to unseen distributions, even if overall performance on withheld domains
+    is lower than if trained jointly.
+
+    '
+  background:
+    description: 'Could we do something like meta-learning during pre-training? Where
+      we regularly cause distribution shifts while randomizing everything else so
+      that the model mostly experiences normal pre-training except the model needs
+      to get good at generalizing to a new distribution each time. I guess the tricky
+      part is figuring out what that distribution should be but time seems like a
+      reasonable variable hiding pockets of time that you don''t share with the model
+      or certain subsets of documents such as, I don''t know, certain kinds of legal
+      documents like, just maritime law. And then maybe the model''s not as good at
+      maritime law overall as if you trained it all at once. But it gets good at extrapolating
+      fast.
+
+      '
+  metadata:
+    author: Ari Holtzman
+    source: IdeaHub
+    source_url: https://hypogenic.ai/ideahub/idea/lYWbO3Ko8Vml3ORT5pgV
+    idea_id: distribution_shift_curriculum_20260323_023116_0c60639b
+    created_at: '2026-03-23T02:31:16.737584'
+    status: submitted
+    github_repo_name: dist-shift-curriculum-claude
+    github_repo_url: https://github.com/Hypogenic-AI/dist-shift-curriculum-claude
