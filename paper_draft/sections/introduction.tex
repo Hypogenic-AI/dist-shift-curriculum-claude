@@ -1,0 +1,20 @@
+\section{Introduction}
+\label{sec:intro}
+
+Language models are increasingly deployed in specialized domains---legal analysis, biomedical research, scientific literature---where the target distribution differs substantially from pretraining data. The standard approach to bridging this gap is domain-specific fine-tuning, which requires additional data, compute, and engineering effort for each new domain. A more appealing alternative would be to pretrain models that adapt \emph{rapidly} to new distributions, reducing the cost of domain specialization.
+
+We take inspiration from an unlikely source: how distribution shifts during training might serve as a feature rather than a bug. Meta-learning methods train models across diverse tasks precisely so they can adapt quickly to new ones~\cite{finn2017maml}. Curriculum learning research has shown that training data ordering affects what models learn and how efficiently they learn it~\cite{bengio2009curriculum, fan2023irreducible, chen2023skillit}. Yet no prior work has tested whether deliberately introducing domain-level distribution shifts during pretraining can improve a model's ability to adapt to new domains.
+
+{\bf Our main question is:} does training a language model with phased domain introduction---withholding certain domains initially, then introducing them---produce a model that adapts faster to unseen distributions compared to standard uniform pretraining?
+
+We propose a \emph{distribution shift curriculum} (\dsc), a simple two-phase pretraining strategy. In Phase~1, the model trains on a subset of ``core'' domains. In Phase~2, previously withheld ``shift'' domains are introduced alongside the core domains. This controlled distribution shift forces the model to integrate new data distributions into its existing representations---a form of implicit meta-learning at the domain level.
+
+We test \dsc on a 30M-parameter GPT-2 model using 13 domains from \thepile~\cite{gao2020pile}. Our experiments reveal three findings. First, the curriculum model adapts 2.8$\times$ faster to shift domains during a post-training adaptation phase (9.1 vs.\ 3.3 perplexity improvement over 500 steps). Second, \dsc unexpectedly improves performance on core domains: the curriculum model outperforms the uniform baseline on 7 of 9 core domains, with 5 reaching statistical significance ($p < 0.05$). Third, the curriculum model exhibits 26\% less catastrophic forgetting on held-out domains during adaptation. However, \dsc does not improve zero-shot transfer to completely unseen domains, and models end training with higher perplexity on shift domains they saw for fewer steps.
+
+Our contributions are:
+\begin{itemize}[leftmargin=*,itemsep=0pt,topsep=0pt]
+    \item We propose \dsc, a domain-withholding curriculum for language model pretraining that creates controlled distribution shifts to improve adaptation speed.
+    \item We conduct controlled experiments (3 seeds, 13 domains) showing that \dsc produces models that adapt 2.8$\times$ faster to new domains while improving core-domain performance by 5.3\%.
+    \item We identify an unexpected benefit of domain concentration: training on fewer domains in Phase~1 yields stronger representations that generalize better within the core domain set.
+    \item We provide detailed per-domain analysis and ablations that characterize when and why distribution shift curricula help or hurt.
+\end{itemize}

@@ -1,0 +1,770 @@
+You are an academic paper writer. Generate a complete NEURIPS style paper
+based on the experiment results provided.
+
+════════════════════════════════════════════════════════════════════════════════
+                         IMPORTANT: BEFORE YOU START
+════════════════════════════════════════════════════════════════════════════════
+
+Before writing any content, you MUST complete these steps:
+
+1. READ THE SKILL: Review the paper-writer skill at .claude/skills/paper-writer/SKILL.md
+2. READ THE STYLE GUIDE: Study templates/paper_writing/lab_style_guide.md carefully
+3. REVIEW EXAMPLES: Browse paper_examples/ for formatting and language patterns:
+   - Look at sections/1.introduction.tex for language style
+   - Look at tables/*.tex for table formatting
+   - Look at commands/*.tex for macro usage
+4. VERIFY COMMAND TEMPLATES: Command templates (math.tex, general.tex, macros.tex) are pre-copied to paper_draft/commands/
+
+CRITICAL: Reference example papers for FORMATTING and LANGUAGE STYLE only.
+Do NOT copy content, phrasing, or narrative structure from the example papers.
+The examples are in a different research domain - focus only on presentation style.
+
+════════════════════════════════════════════════════════════════════════════════
+                            EXPERIMENT REPORT
+════════════════════════════════════════════════════════════════════════════════
+
+# Distribution Shift Curriculum: Research Report
+
+## 1. Executive Summary
+
+We tested whether introducing regular distribution shifts during pretraining — by withholding specific domains and introducing them later — produces models that adapt more quickly to new distributions compared to standard uniform pretraining. Using a 30M-parameter GPT-2 model trained on 13 domains from The Pile, we found that the **curriculum model adapts nearly 3x faster to newly introduced domains** (9.1 vs 3.3 PPL improvement over 500 adaptation steps), and **unexpectedly outperforms the baseline on 7/9 core domains it was trained on throughout**. However, it finishes training with higher perplexity on the shift domains it saw for fewer steps, and shows no significant advantage on completely held-out domains. These results provide partial support for the distribution shift curriculum hypothesis, with the strongest evidence for improved adaptation speed.
+
+## 2. Research Question &amp; Motivation
+
+**Hypothesis**: Introducing regular distribution shifts during pre-training, while randomizing other factors, will encourage the model to generalize more effectively to new distributions. By withholding certain data domains, the model may learn to extrapolate quickly to unseen distributions, even if overall performance on withheld domains is lower than if trained jointly.
+
+**Why this matters**: Standard LLM pretraining uses uniform random sampling, ignoring potential benefits of strategic data ordering. If models can be trained to adapt faster to new domains through curriculum design, this has major implications for deploying LLMs in specialized fields (legal, medical, scientific) without extensive fine-tuning.
+
+**Gap in existing work**: While curriculum learning for LLMs has been extensively studied (Fan &amp; Jaggi 2023, Chen et al. 2023, Luo et al. 2025), no prior work has tested domain-withholding curricula specifically designed to improve adaptation speed. This bridges curriculum learning and domain generalization in a novel way.
+
+## 3. Methodology
+
+### 3.1 Model Architecture
+- **Architecture**: GPT-2 style causal language model
+- **Parameters**: 30.1M (6 layers, 6 heads, 384 embedding dim)
+- **Sequence length**: 512 tokens
+- **Tokenizer**: GPT-2 BPE (50,257 vocab)
+
+### 3.2 Dataset
+- **Source**: monology/pile-uncopyrighted (The Pile)
+- **Tokens per domain**: ~500K train + 20K validation
+- **13 domains** partitioned into three groups:
+
+| Group | Domains | Purpose |
+|-------|---------|---------|
+| **Core** (9) | Pile-CC, PubMed Abstracts, StackExchange, Github, Wikipedia, USPTO, HackerNews, NIH ExPorter, Enron Emails | Always available during training |
+| **Shift** (3) | FreeLaw, DM Mathematics, PubMed Central | Withheld in Phase 1, introduced in Phase 2 |
+| **Held-out** (1) | ArXiv | Never trained on; zero-shot evaluation only |
+
+### 3.3 Training Protocol
+Two training conditions, each run with 3 random seeds (42, 123, 456):
+
+**Baseline (Uniform)**: 3,000 steps on all 12 train domains (core + shift), uniform sampling.
+
+**Curriculum (Distribution Shift)**: 
+- Phase 1 (1,800 steps, 60%): Train on core domains only
+- Phase 2 (1,200 steps, 40%): Train on all train domains (core + shift)
+
+Both conditions used:
+- **Optimizer**: AdamW (lr=3e-4, weight_decay=0.01)
+- **Constant learning rate** (no decay, per Luo et al. 2025 recommendation)
+- **EMA model averaging** (decay=0.999) for evaluation
+- **Gradient clipping**: max norm 1.0
+- **Batch size**: 32
+- **Max sequences per domain**: 800 (for balance)
+
+### 3.4 Adaptation Experiment
+After main training, both models&#39; EMA checkpoints were continued for 500 steps on shift domains only (lr=1.5e-4), measuring perplexity on shift and held-out domains every 100 steps.
+
+### 3.5 Hardware &amp; Software
+- **GPU**: NVIDIA RTX A6000 (49 GB)
+- **PyTorch**: 2.4.0+cu124
+- **Transformers**: 5.5.0
+- **Training time**: ~30 min per seed (baseline + curriculum + adaptation)
+
+## 4. Results
+
+### 4.1 Final Perplexity Comparison (After 3,000 Steps)
+
+| Domain | Group | Baseline PPL | Curriculum PPL | Δ PPL | p-value | Winner |
+|--------|-------|-------------|----------------|-------|---------|--------|
+| Pile-CC | Core | 270.3 ± 2.5 | 265.0 ± 1.3 | +5.3 | 0.170 | — |
+| PubMed Abstracts | Core | 214.7 ± 2.4 | 192.1 ± 0.8 | **+22.6** | **0.009** | **Curriculum** |
+| StackExchange | Core | 105.7 ± 1.2 | 101.6 ± 1.4 | +4.1 | 0.071 | — |
+| Github | Core | 60.5 ± 0.3 | 57.9 ± 1.7 | +2.6 | 0.128 | — |
+| Wikipedia (en) | Core | 358.0 ± 2.2 | 356.6 ± 1.0 | +1.4 | 0.354 | — |
+| USPTO Backgrounds | Core | 96.1 ± 0.4 | 86.6 ± 0.5 | **+9.5** | **0.005** | **Curriculum** |
+| HackerNews | Core | 187.8 ± 1.6 | 178.1 ± 0.6 | **+9.7** | **0.010** | **Curriculum** |
+| NIH ExPorter | Core | 150.9 ± 1.2 | 133.5 ± 0.6 | **+17.4** | **0.001** | **Curriculum** |
+| Enron Emails | Core | 73.2 ± 0.3 | 66.4 ± 0.7 | **+6.7** | **0.005** | **Curriculum** |
+| FreeLaw | Shift | 52.0 ± 0.6 | 69.1 ± 0.8 | **−17.1** | **0.002** | **Baseline** |
+| DM Mathematics | Shift | 8.6 ± 0.0 | 11.5 ± 0.1 | **−3.0** | **&lt;0.001** | **Baseline** |
+| PubMed Central | Shift | 84.0 ± 1.4 | 98.3 ± 0.3 | **−14.3** | **0.005** | **Baseline** |
+| ArXiv | Held-out | 179.5 ± 9.0 | 184.6 ± 1.6 | −5.1 | 0.473 | — |
+
+**Bold** = statistically significant at p &lt; 0.05 (paired t-test, 3 seeds).
+
+### 4.2 Domain Group Summary
+
+| Group | Baseline Avg PPL | Curriculum Avg PPL | Curriculum Advantage |
+|-------|-----------------|-------------------|---------------------|
+| Core domains (9) | 168.6 | 159.7 | **+5.3% better** |
+| Shift domains (3) | 48.2 | 59.7 | −19.1% worse |
+| Held-out (1) | 179.5 | 184.6 | −2.8% (not significant) |
+
+### 4.3 Adaptation Speed (Key Result)
+
+During the 500-step adaptation phase on shift domains:
+
+| Metric | Baseline | Curriculum | Ratio |
+|--------|----------|------------|-------|
+| Initial shift-domain PPL | 47.6 | 57.6 | — |
+| Final shift-domain PPL | 44.4 | 48.5 | — |
+| **PPL improvement** | **3.3** | **9.1** | **2.8x faster** |
+| Held-out PPL degradation | −10.7 | −7.9 | 26% less forgetting |
+
+The curriculum model improves **2.8x faster** on shift domains during adaptation, supporting the core hypothesis that distribution shift training improves rapid adaptation.
+
+### 4.4 Training Dynamics
+
+The training curves reveal key dynamics:
+
+**Shift domains during Phase 1 (curriculum)**: Without seeing shift domain data, the curriculum model&#39;s perplexity on these domains decreases anyway (from ~14,000 to ~350), suggesting transfer from core domains. However, this transfer is slower than the baseline&#39;s direct training.
+
+**Phase 2 transition**: When shift domains are introduced at step 1,800, the curriculum model rapidly decreases perplexity (e.g., PubMed Central: 416 → 98 in 1,200 steps), though it doesn&#39;t fully catch up to the baseline.
+
+**Core domain improvement**: Surprisingly, the curriculum model consistently outperforms the baseline on core domains by the end of training, likely because Phase 1 concentrates all gradient updates on these domains.
+
+![Final Perplexity Comparison](figures/final_comparison.png)
+![Shift Domain Training Curves](figures/training_curves_shift_domains.png)
+![Adaptation Curves](figures/adaptation_curves.png)
+
+## 5. Analysis &amp; Discussion
+
+### 5.1 Hypothesis Testing
+
+**H1 (Faster adaptation)**: **Supported.** The curriculum model improves 2.8x faster on shift domains during adaptation (9.1 vs 3.3 PPL points in 500 steps). This is the strongest finding.
+
+**H2 (Convergence on shift domains)**: **Partially refuted.** After the same total training steps, the curriculum model has not caught up on shift domains (PPL 59.7 vs 48.2). More Phase 2 steps may be needed. The gap is narrowing but not closed.
+
+**H3 (Better zero-shot transfer)**: **Not supported.** ArXiv perplexity shows no significant difference (179.5 vs 184.6, p=0.47). The distribution shift curriculum does not improve zero-shot generalization to completely unseen domains.
+
+### 5.2 Unexpected Finding: Core Domain Improvement
+
+The most surprising result is that the curriculum model significantly outperforms the baseline on 5/9 core domains (p &lt; 0.05), despite seeing identical amounts of core domain data. This suggests that **concentrating learning on fewer domains in Phase 1 leads to better representations** that generalize within the core domain set. This is analogous to the curriculum learning principle of &#34;start simple&#34; — by focusing on fewer domains first, the model may develop more robust features before being exposed to the full distribution.
+
+### 5.3 Adaptation Speed Mechanism
+
+The curriculum model&#39;s faster adaptation to shift domains may result from:
+1. **Stronger base representations**: Better core-domain performance suggests more useful features were learned
+2. **Less interference**: The baseline&#39;s simultaneous training on all domains may create interference that slows adaptation
+3. **Meta-learning effect**: The Phase 1→Phase 2 transition itself is a distribution shift the model &#34;learns from&#34;
+
+However, we cannot fully disentangle these explanations with the current experimental design.
+
+### 5.4 Catastrophic Forgetting During Adaptation
+
+Both models show increased ArXiv perplexity during shift-domain adaptation (expected, as ArXiv is never trained on), but the curriculum model shows 26% less degradation (−7.9 vs −10.7 PPL). This tentatively suggests the curriculum may confer some resistance to catastrophic forgetting, though the sample size is too small for statistical significance.
+
+## 6. Limitations
+
+1. **Small scale**: 30M parameters and ~6M training tokens is far below modern pretraining scale. Effects may differ at larger scales (positive or negative).
+
+2. **Few seeds**: Only 3 random seeds per condition. While results are highly consistent (low standard deviations), more seeds would strengthen statistical conclusions.
+
+3. **Single curriculum design**: We tested one specific split (60/40 core/shift) with one set of withheld domains. The optimal curriculum schedule is unknown.
+
+4. **Data imbalance**: Max 800 sequences per domain may not reflect natural distributions. Real pretraining uses orders-of-magnitude more data.
+
+5. **No downstream benchmarks**: We measured perplexity only. Task-specific performance (e.g., MMLU, ARC) could show different patterns.
+
+6. **Constant LR confound**: While we followed Luo et al.&#39;s recommendation to use constant LR, this is atypical for production pretraining. Interactions with cosine/WSD schedules are untested.
+
+7. **Limited held-out evaluation**: Only one held-out domain (ArXiv) makes it hard to draw conclusions about zero-shot generalization.
+
+## 7. Conclusions &amp; Next Steps
+
+### Conclusions
+
+**The distribution shift curriculum produces models that adapt faster to new domains (2.8x) while improving performance on domains seen throughout training.** However, it does not improve zero-shot transfer to completely unseen domains, and models end up with worse performance on domains introduced later in training (until adapted). This represents a meaningful but nuanced trade-off: the approach is most valuable when the goal is rapid domain adaptation rather than immediate coverage.
+
+### Recommended Follow-up Experiments
+
+1. **Scale up**: Test with 124M–1.3B parameter models and 1B+ tokens to verify effects persist
+2. **Multiple distribution shifts**: Instead of one shift point, introduce domains in waves (Phase 1→2→3→4) to test if repeated shifts further improve adaptation
+3. **Vary curriculum schedule**: Test different Phase 1/Phase 2 ratios (50/50, 70/30, 80/20)
+4. **Downstream evaluation**: Add MMLU, ARC, and other benchmarks
+5. **Combine with DRO**: Apply Group DRO loss during Phase 2 to improve shift-domain convergence
+6. **LR schedule interaction**: Test with cosine decay, WSD, and CMA (Luo et al. 2025)
+
+### Open Questions
+
+- Does the core-domain improvement scale with model size, or is it a small-model artifact?
+- Would introducing shift domains with higher sampling weight in Phase 2 close the perplexity gap faster?
+- Is the adaptation speed advantage maintained when the adaptation budget is larger (e.g., 5,000 steps)?
+
+## References
+
+1. Fan &amp; Jaggi (2023). &#34;Irreducible Curriculum for Language Model Pretraining.&#34; arXiv:2310.15389.
+2. Chen et al. (2023). &#34;Skill-it! A Data-Driven Skills Framework.&#34; NeurIPS 2023. arXiv:2307.14430.
+3. Luo et al. (2025). &#34;How Learning Rate Decay Wastes Your Best Data in Curriculum-Based LLM Pretraining.&#34; arXiv:2511.18903.
+4. Xie et al. (2023). &#34;DoReMi: Optimizing Data Mixtures Speeds Up LM Pretraining.&#34; NeurIPS 2023.
+5. Sagawa et al. (2019). &#34;Distributionally Robust Neural Networks for Group Shifts.&#34; ICLR 2020.
+6. Arjovsky et al. (2019). &#34;Invariant Risk Minimization.&#34; arXiv:1907.02893.
+7. Bengio et al. (2009). &#34;Curriculum Learning.&#34; ICML 2009.
+
+
+════════════════════════════════════════════════════════════════════════════════
+                            RESEARCH PLAN
+════════════════════════════════════════════════════════════════════════════════
+
+# Research Plan: Distribution Shift Curriculum
+
+## Motivation &amp; Novelty Assessment
+
+### Why This Research Matters
+Standard LLM pretraining uses uniform random sampling across all available data. This ignores the potential benefit of *strategic* distribution shifts that could teach models to adapt quickly to new domains — a form of meta-learning during pretraining. If successful, this approach could produce models that generalize better to unseen domains without domain-specific fine-tuning, which has major practical implications for deploying LLMs in specialized fields.
+
+### Gap in Existing Work
+Based on the literature review, curriculum learning for LLMs has been studied extensively (Bengio 2009, Fan &amp; Jaggi 2023, Chen et al. 2023, Luo et al. 2025), but:
+1. **No paper directly tests domain-withholding curricula** — existing work focuses on difficulty-based ordering or optimal static mixtures (DoReMi)
+2. **Domain-level distribution shifts are understudied** — most curriculum work operates at sample level
+3. **Sequential domain introduction** (our approach) is distinct from static mixture optimization and has not been systematically evaluated
+4. **Adaptation speed** to withheld domains is not measured in any prior work
+
+### Our Novel Contribution
+We test whether deliberately withholding domains during pretraining and introducing them later (creating controlled distribution shifts) produces models that adapt more quickly to unseen domains compared to standard uniform training. This bridges curriculum learning and domain generalization in a way not previously studied.
+
+### Experiment Justification
+- **Experiment 1 (Baseline)**: Uniform training on all domains — establishes the standard reference
+- **Experiment 2 (Distribution Shift Curriculum)**: Phased domain introduction — tests the core hypothesis
+- **Experiment 3 (Domain Generalization Probe)**: Evaluate both models on fully withheld domains — measures true generalization
+
+## Research Question
+Does introducing regular distribution shifts during pretraining (by withholding and then introducing specific domains) improve a model&#39;s ability to rapidly adapt to new distributions, compared to standard uniform pretraining?
+
+## Background and Motivation
+Meta-learning principles suggest that exposing a learner to diverse tasks/distributions improves adaptation. We apply this to LLM pretraining by creating a curriculum of domain shifts. The literature (Luo et al. 2025) warns that LR schedules interact critically with curricula, so we use constant LR with EMA averaging.
+
+## Hypothesis Decomposition
+1. **H1**: A model trained with phased domain introduction will achieve lower perplexity on newly introduced domains *faster* (fewer tokens) than a uniformly trained model
+2. **H2**: The curriculum model will have higher perplexity on withheld domains initially but converge to comparable or better perplexity
+3. **H3**: The curriculum model will show better zero-shot transfer to completely unseen domains (domains never seen during training)
+
+## Proposed Methodology
+
+### Approach
+Train a small GPT-2 architecture (~30M params) on streamed data from The Pile (monology/pile-uncopyrighted). Use 4x A6000 GPUs. Compare two training regimes:
+- **Baseline**: Uniform random sampling from all domains
+- **Curriculum**: Phase 1 trains on &#34;core&#34; domains only; Phase 2 introduces &#34;shift&#34; domains; Phase 3 evaluates on &#34;held-out&#34; domains never seen during training
+
+### Domain Partitioning
+- **Core domains** (always available): Pile-CC, PubMed Abstracts, StackExchange, Github, Wikipedia, USPTO Backgrounds, HackerNews, NIH ExPorter, Enron Emails (~90% of data)
+- **Shift domains** (introduced in Phase 2): FreeLaw, DM Mathematics, PubMed Central
+- **Held-out domains** (never trained on, for zero-shot evaluation): ArXiv
+
+### Experimental Steps
+1. Stream and tokenize ~50M tokens from The Pile, split by domain
+2. Create domain-specific validation sets (5K tokens each)
+3. Train baseline model for 10K steps on all domains (uniform)
+4. Train curriculum model: 7K steps on core domains, then 3K steps with shift domains added
+5. After training, measure adaptation: continue training both models on shift domains for 1K additional steps, measuring perplexity curves
+6. Evaluate both on held-out ArXiv domain (zero-shot)
+
+### Baselines
+1. **Uniform**: Standard random sampling across all domains
+2. **Core-only**: Train only on core domains (no shift domains ever) — ablation
+
+### Evaluation Metrics
+- Per-domain validation perplexity
+- Adaptation speed: perplexity on shift domains as a function of tokens seen
+- Zero-shot perplexity on held-out ArXiv domain
+- Average perplexity across all domains
+
+### Statistical Analysis Plan
+- Run each configuration with 3 random seeds
+- Report mean ± std for all metrics
+- Paired t-test for key comparisons (p &lt; 0.05)
+- Plot learning curves with confidence bands
+
+## Expected Outcomes
+- **Supporting H1**: Curriculum model reaches target perplexity on shift domains in fewer adaptation tokens
+- **Supporting H2**: Curriculum model converges to comparable final perplexity despite later introduction
+- **Supporting H3**: Curriculum model achieves lower zero-shot perplexity on ArXiv
+- **Refuting**: No difference or curriculum model is strictly worse
+
+## Timeline and Milestones
+1. Data preparation and tokenization: 15 min
+2. Model implementation and training harness: 30 min
+3. Baseline training (3 seeds): 30 min
+4. Curriculum training (3 seeds): 30 min
+5. Adaptation experiments: 20 min
+6. Analysis and visualization: 20 min
+7. Documentation: 20 min
+
+## Potential Challenges
+- Streaming data may be slow — mitigate by pre-downloading sufficient data
+- Small model may not show clear curriculum effects — but literature shows effects even at 124M (Fan &amp; Jaggi 2023)
+- Domain imbalance in The Pile — control by capping tokens per domain
+
+## Success Criteria
+1. Clear, reproducible experiments with 3 seeds each
+2. Statistically significant difference in adaptation speed (p &lt; 0.05)
+3. Comprehensive per-domain analysis showing where curriculum helps/hurts
+
+
+════════════════════════════════════════════════════════════════════════════════
+                          LITERATURE REVIEW
+════════════════════════════════════════════════════════════════════════════════
+
+# Literature Review: Distribution Shift Curriculum for LLM Pretraining
+
+## Research Area Overview
+
+This review covers the intersection of **curriculum learning for language model pretraining** and **distribution shift robustness**. The central research question is whether deliberately introducing distribution shifts during pretraining—by withholding and then presenting certain data domains—can encourage models to generalize more effectively to unseen distributions.
+
+Two largely separate literatures converge here: (1) curriculum learning, which studies how training data ordering affects learning outcomes, and (2) domain generalization/distributionally robust optimization, which studies how to train models that perform well under distribution shift. Recent work (2023–2026) has begun bridging these areas, with several papers demonstrating that strategic data ordering during LLM pretraining can yield significant efficiency and quality gains.
+
+---
+
+## Key Papers
+
+### Foundational: Curriculum Learning
+
+#### Bengio et al. (2009) — &#34;Curriculum Learning&#34;
+- **Source:** ICML 2009 (6800+ citations)
+- **Key Contribution:** Formalized curriculum learning: training on progressively harder examples improves convergence and generalization. Demonstrated on vision (shape recognition) and NLP (language modeling) tasks.
+- **Methodology:** Define difficulty metrics, sort training data easy-to-hard, gradually increase the proportion of hard examples.
+- **Relevance:** Foundational framework. However, subsequent work shows that simple difficulty-based orderings yield mixed results for modern LLMs.
+
+---
+
+### Curriculum Learning for LLM Pretraining
+
+#### Campos et al. (2021) — &#34;On the Role of Corpus Ordering in Language Modeling&#34;
+- **arXiv:** 2104.06127
+- **Key Finding:** Competence-Based Curriculum with 8 difficulty proxies (sentence length, n-gram entropy, parse depth) produced **no compelling evidence** of benefit for LM pretraining (ELMo). Random curricula performed comparably to linguistically motivated ones. Benefits disappeared with larger corpora.
+- **Code:** https://github.com/spacemanidol/CurriculumLearningForLanguageModels
+- **Relevance:** Important negative result—naive difficulty-based curricula do not help LM pretraining under standard settings.
+
+#### Fan &amp; Jaggi (2023) — &#34;Irreducible Curriculum for Language Model Pretraining&#34;
+- **arXiv:** 2310.15389
+- **Key Contribution:** Uses a small proxy model (82M params) to compute per-sample &#34;learnability&#34; scores (loss gap between early and late proxy checkpoints). Training starts with the most learnable samples and gradually includes all data.
+- **Datasets:** RedPajama-1B (7 domains)
+- **Key Results:** Consistently lower perplexity across all 7 domains vs random baseline. MMLU 5-shot: 26.9% vs 22.9% baseline. Reduces network sharpness (flatter minima). **Critical finding:** Global curriculum (ranking across domains) hurts some domains because learnability scores are not comparable across domains—must apply intra-domain.
+- **Relevance:** Directly demonstrates that controlled distribution shifts (biased→full) during pretraining improve generalization. The intra-domain requirement is a key design constraint for our hypothesis.
+
+#### Chen et al. (2023) — &#34;Skill-it! A Data-Driven Skills Framework&#34;
+- **arXiv:** 2307.14430 (NeurIPS 2023 Spotlight)
+- **Key Contribution:** Defines &#34;skills&#34; as learnable data units with prerequisite dependencies. Constructs a directed skills graph and uses online mirror descent (SKILL-IT) to dynamically adjust sampling proportions during training.
+- **Datasets:** LEGO synthetic, Natural Instructions, RedPajama (3B model)
+- **Key Results:** 36.5 points higher accuracy than random on LEGO. On RedPajama, 1B tokens with SKILL-IT matches 3B tokens with uniform sampling (**3x data efficiency**). Skills graphs transfer across model scales (125M→1.3B).
+- **Relevance:** Demonstrates that **prerequisite structure matters more than easy-to-hard ordering**. Dynamic distribution shifts guided by skill dependencies are far more effective than static curricula.
+
+#### Luo et al. (2025) — &#34;How Learning Rate Decay Wastes Your Best Data in Curriculum-Based LLM Pretraining&#34;
+- **arXiv:** 2511.18903
+- **Key Contribution:** Identifies a fundamental conflict: standard LR decay (cosine, WSD) reduces learning rate near zero at the end of training, exactly when quality-ascending curricula present the best data. Proposes Curriculum Model Averaging (CMA): constant LR + EMA over final checkpoints.
+- **Datasets:** DCLM-Baseline (30B tokens), Qwen2.5-1.5B architecture
+- **Key Results:** Curriculum with constant LR substantially outperforms random, but advantage disappears with standard LR decay. CMA yields +1.64% average benchmark improvement. **Prior negative results about curriculum learning were artifacts of LR schedule choice.**
+- **Relevance:** **Critical methodological insight for our experiments.** Any distribution shift curriculum must co-design the learning rate schedule with the data ordering. Model averaging is a key enabler.
+
+#### Kim &amp; Lee (2024) — &#34;Strategic Data Ordering: Enhancing LLM Performance through Curriculum Learning&#34;
+- **arXiv:** 2405.07490
+- **Key Results:** Applied curriculum learning to instruction tuning (Mistral-7B, Gemma-7B) with 3 difficulty criteria (prompt length, attention score, loss). Results are **mixed and modest** (0.1–0.6 pp improvements). The paper itself characterizes improvements as &#34;not significantly impactful.&#34;
+- **Relevance:** Suggests that for fine-tuning (vs pretraining), curriculum effects are smaller. Our hypothesis focuses on pretraining, where effects appear larger.
+
+#### Xie et al. (2023) — &#34;DoReMi: Optimizing Data Mixtures Speeds Up LM Pretraining&#34;
+- **NeurIPS 2023**
+- **Key Contribution:** Uses a small proxy model trained with Group DRO to find optimal domain mixture weights. A 280M proxy sets weights for an 8B model.
+- **Key Results:** +6.5% average few-shot accuracy, 2.6x faster to reach baseline accuracy.
+- **Code:** https://github.com/sangmichaelxie/doremi
+- **Relevance:** Domain mixture optimization is a form of static distribution control during pretraining. Complements curriculum approaches that change the mixture over time.
+
+#### Lin et al. (2024) — &#34;Rho-1: Not All Tokens Are What You Need&#34;
+- **NeurIPS 2024**
+- **Key Contribution:** Token-level selective pretraining using excess loss against a reference model. Trains only on tokens with highest excess loss.
+- **Key Results:** SOTA on MATH with only 3% of pretraining tokens. +6.8% average improvement across 15 tasks on 80B general tokens.
+- **Code:** https://github.com/microsoft/rho
+- **Relevance:** Fine-grained data selection is an extreme form of distribution shift—the model sees a very different distribution than the raw data.
+
+#### Other Curriculum-for-LLM Papers (Reviewed Abstracts)
+- **Campos (2021)** — BERT curriculum with increasing block size. Minor perplexity improvements.
+- **Choe (2022)** — Length-based curriculum for LM pretraining. Small but consistent gains.
+- **DeepSpeed (2022)** — Sequence-length curriculum enables 8x larger batch size.
+- **BabyLM Challenge (2023)** — Sample-efficient pretraining on developmentally plausible corpora. Curriculum approaches competitive.
+- **CLIMB (2023)** — Infant-inspired curriculum for model building.
+- **Code-Switching Curriculum (2024)** — Multilingual transfer via code-switching curriculum.
+- **Vocabulary Curriculum (2024)** — Scaling LLM pretraining by gradually expanding vocabulary.
+- **Preference Curriculum (2024)** — Pretrain on model&#39;s preferred (lower-loss) data first.
+
+---
+
+### Distribution Shift Robustness
+
+#### Arjovsky et al. (2019) — &#34;Invariant Risk Minimization (IRM)&#34;
+- **arXiv:** 1907.02893 (2600+ citations)
+- **Key Contribution:** Learns representations where the optimal classifier is invariant across training environments. Penalizes environment-specific feature reliance.
+- **Code:** https://github.com/facebookresearch/InvariantRiskMinimization
+- **Relevance:** Provides theoretical framework for invariant features. Our hypothesis implicitly assumes that distribution shifts encourage learning invariant representations.
+
+#### Sagawa et al. (2019) — &#34;Distributionally Robust Neural Networks for Group Shifts&#34;
+- **ICLR 2020** (1500+ citations)
+- **Key Contribution:** Group DRO minimizes worst-group loss. Critical finding: DRO only works with strong regularization (large L2 penalty or early stopping) in overparameterized networks.
+- **Datasets:** Waterbirds, CelebA, MultiNLI
+- **Code:** https://github.com/kohpangwei/group_DRO
+- **Relevance:** Demonstrates that worst-group robustness requires explicit optimization + regularization. Relevant to ensuring our curriculum doesn&#39;t sacrifice minority domain performance.
+
+#### Krueger et al. (2021) — &#34;Risk Extrapolation (REx)&#34;
+- **arXiv:** 2003.00688 (1100+ citations)
+- **Key Contribution:** Penalizes variance of per-domain risks. Unlike IRM, also provides robustness to covariate shift. Proves that equalizing risks across environments can recover causal mechanisms.
+- **Relevance:** V-REx (variance penalty) could be combined with our curriculum: penalize risk variance across domains at each training phase to encourage invariant learning during distribution shifts.
+
+#### Piratla et al. (2022) — &#34;Focus on the Common Good&#34; (CGD)
+- **ICLR 2022**
+- **Key Contribution:** Selects training groups whose gradients most decrease average loss across ALL groups (not just worst group). Avoids Group DRO&#39;s failure mode with noisy groups.
+- **Code:** https://github.com/vihari/CGD
+- **Relevance:** &#34;Common gradient&#34; selection could inform which domain to introduce next in a distribution shift curriculum—introduce domains whose gradients are most aligned with existing knowledge.
+
+#### Yi et al. (2022) — &#34;Distribution Shift Robustness From the Perspective of Pre-Training&#34;
+- **arXiv:** 2205.12392
+- **Key Finding:** Pre-training on diverse data provides substantial distribution shift robustness, often more than specialized OOD methods applied during fine-tuning. Data augmentation during pre-training further helps.
+- **Relevance:** Directly supports our hypothesis that pretraining-phase interventions (including distribution shifts) can improve OOD robustness.
+
+#### Koh et al. (2021) — &#34;WILDS: A Benchmark of in-the-Wild Distribution Shifts&#34;
+- **arXiv:** 2012.07421 (1700+ citations)
+- **Key Contribution:** Benchmark of 10 datasets with real-world distribution shifts across domains, subpopulations, and time.
+- **Code:** https://github.com/p-lambda/wilds
+- **Relevance:** Provides evaluation methodology for distribution shift robustness. Could be used for downstream evaluation of pretrained models.
+
+---
+
+## Common Methodologies
+
+### Data Selection/Ordering Approaches
+1. **Difficulty-based:** Sort by difficulty metrics (length, perplexity, entropy). Mixed results for LLMs.
+2. **Learnability-based:** Use proxy model to score sample learnability. More effective (Irreducible Curriculum).
+3. **Skill-graph-based:** Model prerequisite dependencies between data subsets. Most effective (Skill-it, 3x efficiency).
+4. **Domain mixture optimization:** Find optimal static domain weights (DoReMi) or dynamic reweighting.
+5. **Token-level selection:** Select individual tokens based on excess loss (Rho-1). Most fine-grained.
+
+### Robustness Approaches
+1. **ERM + diverse pretraining:** Simple but effective baseline.
+2. **Group DRO:** Minimize worst-group loss with strong regularization.
+3. **IRM/REx:** Penalize environment-specific features or risk variance.
+4. **Common gradient descent:** Select training data whose gradients benefit all groups.
+
+---
+
+## Standard Baselines for Experiments
+
+1. **Uniform random sampling** — The default pretraining approach
+2. **Domain-proportional sampling** — Sample proportional to domain sizes
+3. **DoReMi mixture** — Optimized static domain weights
+4. **Easy-to-hard curriculum** — Traditional curriculum learning
+5. **Anti-curriculum** — Hard-to-easy ordering (surprisingly competitive on some benchmarks)
+
+---
+
+## Evaluation Metrics
+
+- **Perplexity** on held-out validation sets (per-domain and average)
+- **MMLU** (5-shot) — General knowledge and reasoning
+- **LM Evaluation Harness** benchmarks (ARC, HellaSwag, WinoGrande, etc.)
+- **Per-domain performance** on withheld domains — Key metric for our hypothesis
+- **Worst-domain performance** — Measures robustness
+- **Data efficiency** — Tokens needed to reach a performance threshold
+
+---
+
+## Datasets in the Literature
+
+| Dataset | Used By | Domains | Size |
+|---------|---------|---------|------|
+| RedPajama-1B | Irreducible Curriculum, Skill-it | 7 | ~1B tokens |
+| The Pile | Multiple | 22 | 825 GB |
+| SlimPajama-6B | Available replacement | 7 | 14 GB |
+| DCLM-Baseline | LR Decay paper | Web crawl | 30B+ tokens |
+| Natural Instructions | Skill-it | 23+ task categories | Varies |
+| WILDS | Distribution shift benchmark | 10 datasets | Varies |
+
+---
+
+## Gaps and Opportunities
+
+1. **No paper directly tests our hypothesis:** No existing work deliberately withholds specific domains during pretraining and then evaluates rapid adaptation to those domains. This is a genuine research gap.
+
+2. **Domain-level vs. sample-level curriculum:** Most curriculum work operates at the sample level (difficulty scoring). Domain-level distribution shifts (our approach) are understudied.
+
+3. **Interaction with optimization:** The LR decay paper shows that curriculum benefits are highly sensitive to optimization choices. This must be accounted for in experimental design.
+
+4. **Scale dependence:** Most curriculum learning results are at small scale (&lt;3B params, &lt;30B tokens). Whether effects persist at larger scale is unknown.
+
+5. **Temporal/sequential domain introduction:** Our hypothesis involves sequential introduction of withheld domains, which is distinct from static mixture optimization (DoReMi) or gradual difficulty increase. This sequential shift has not been systematically studied.
+
+---
+
+## Recommendations for Our Experiment
+
+### Recommended Datasets
+1. **Primary:** `monology/pile-uncopyrighted` — 17 labeled domains, well-studied, supports streaming. Withhold domains like FreeLaw, DM Mathematics, EuroParl.
+2. **Alternative:** `DKYoon/SlimPajama-6B` — 7 domains, 14 GB, faster iteration.
+
+### Recommended Baselines
+1. Uniform random sampling (standard pretraining)
+2. DoReMi-style optimized static mixture
+3. Irreducible curriculum (learnability-based ordering)
+4. Anti-curriculum (to test if any ordering helps)
+
+### Recommended Metrics
+1. Per-domain validation perplexity (especially on withheld domains)
+2. Withheld-domain adaptation speed (few-shot perplexity after domain introduction)
+3. Average perplexity across all domains
+4. Downstream benchmarks (MMLU, ARC) if compute allows
+
+### Methodological Considerations
+1. **Use constant LR or moderate LR decay** — Standard cosine decay will mask curriculum effects (Luo et al. 2025).
+2. **Apply curriculum intra-domain** if using learnability scoring — Global scoring creates domain imbalance (Fan &amp; Jaggi 2023).
+3. **Consider model averaging** (EMA over checkpoints) as a complementary technique.
+4. **Use a small proxy model** (10-50M params) to score data and set curriculum, then apply to a larger model. Proxy-based approaches are computationally cheap and transfer across scales.
+5. **Measure per-domain performance separately** — Average metrics can hide domain-level regressions.
+
+
+════════════════════════════════════════════════════════════════════════════════
+                          PAPER REQUIREMENTS
+════════════════════════════════════════════════════════════════════════════════
+
+Generate a complete academic paper with the following structure:
+
+1. TITLE
+   - Clear, specific, informative
+   - Should convey main finding or contribution
+
+2. AUTHOR
+   - Use this exact author line in the \author{} block: Ari Holtzman and NeuriCo
+
+3. ABSTRACT (150-250 words)
+   - Problem statement
+   - Approach
+   - Key results
+   - Significance
+
+4. INTRODUCTION
+   - Research problem and motivation
+   - Gap in existing work
+   - Our contribution (be specific)
+   - Paper organization
+
+5. RELATED WORK
+   - Organized by theme/approach
+   - Position our work relative to prior work
+   - Cite papers from literature review
+
+6. METHODOLOGY
+   - Clear description of approach
+   - Experimental setup
+   - Datasets used
+   - Evaluation metrics
+   - Baselines
+
+7. RESULTS
+   - Present results with tables and figures
+   - Statistical analysis
+   - Comparison to baselines
+   - Ablation studies (if applicable)
+
+8. DISCUSSION
+   - Interpretation of results
+   - Limitations
+   - Broader implications
+
+9. CONCLUSION
+   - Summary of contributions
+   - Key findings
+   - Future work
+
+10. REFERENCES
+   - BibTeX format
+   - All cited papers
+
+════════════════════════════════════════════════════════════════════════════════
+                          OUTPUT FORMAT
+════════════════════════════════════════════════════════════════════════════════
+
+Create a MODULAR LaTeX project with the following directory structure:
+
+paper_draft/
+├── main.tex              # Main file that imports all sections
+├── references.bib        # BibTeX references
+├── sections/
+│   ├── abstract.tex      # Abstract content
+│   ├── introduction.tex  # Introduction section
+│   ├── related_work.tex  # Related work section
+│   ├── methodology.tex   # Methodology section
+│   ├── results.tex       # Results section
+│   ├── discussion.tex    # Discussion section
+│   └── conclusion.tex    # Conclusion section
+├── figures/              # Directory for any generated figures
+├── tables/               # Directory for complex standalone tables
+└── appendix/             # Directory for appendix sections (if needed)
+
+INSTRUCTIONS:
+1. First, create the directory structure above (mkdir -p paper_draft/sections paper_draft/figures paper_draft/tables paper_draft/appendix)
+2. Write main.tex using the EXACT preamble for NEURIPS:
+
+   \documentclass{article}
+   \usepackage[final]{neurips_2025}  % NEURIPS style (neurips_2025.sty is in paper_draft/)
+   \usepackage[hidelinks]{hyperref}  % REQUIRED: clickable links
+   \usepackage{booktabs}  % REQUIRED: professional tables
+   \usepackage{graphicx}
+   \usepackage{amsmath,amssymb}
+
+   % Import command files
+   \input{commands/math}
+   \input{commands/general}
+   \input{commands/macros}
+
+   % Use this bibliography style:
+   \bibliographystyle{plainnat}
+
+   \author{Ari Holtzman and NeuriCo}
+
+   - Use \input{sections/...} to include each section
+   - Use \bibliography{references} for references
+3. Write each section file with COMPLETE content (no placeholders)
+4. Each section file should include its \section{} command
+5. Write references.bib with all citations in BibTeX format
+6. After writing all files, compile the paper:
+   cd paper_draft && pdflatex -interaction=nonstopmode main.tex && bibtex main && pdflatex -interaction=nonstopmode main.tex && pdflatex -interaction=nonstopmode main.tex
+
+This modular structure allows humans to easily:
+- Edit individual sections without navigating a large file
+- Track changes per section
+- Reuse sections across different paper versions
+
+════════════════════════════════════════════════════════════════════════════════
+                          QUALITY REQUIREMENTS
+════════════════════════════════════════════════════════════════════════════════
+
+- Academic tone throughout
+- All claims must be supported by data from the experiment report
+- Proper citations using \cite{} commands
+- Clear figures and tables with proper captions
+- NO placeholder text - every section must have real content
+- The paper MUST compile without errors
+- If compilation fails, debug and fix the LaTeX errors
+
+════════════════════════════════════════════════════════════════════════════════
+                          LAB WRITING STYLE
+════════════════════════════════════════════════════════════════════════════════
+
+Follow these lab-specific conventions to match our paper style:
+
+1. LANGUAGE STYLE:
+   - Use active voice: "We propose", "We examine", "We focus on"
+   - Be direct and confident: "Our main question is...", "We hypothesize that..."
+   - State things clearly and simply - prefer plain language over jargon
+   - Use bold questions as paragraph organizers: {\bf what is X?}
+   - Include specific quantitative claims: "8.97% over baseline"
+   - Avoid fancy wording: "utilize" → "use", "facilitate" → "help"
+
+2. INTRODUCTION STRUCTURE:
+   - Engaging hook (get to the point quickly)
+   - Problem importance
+   - Gap identification
+   - Your approach with method figure reference
+   - Quantitative preview of results
+   - Contribution bullets (3-4 items, action verbs)
+
+3. CONTRIBUTION LISTS:
+   \begin{itemize}[leftmargin=*,itemsep=0pt,topsep=0pt]
+       \item We propose...
+       \item We conduct...
+       \item We complement...
+   \end{itemize}
+
+4. MODULAR COMMANDS STRUCTURE:
+   Command templates are pre-copied to paper_draft/commands/:
+   - math.tex: Math notation macros
+   - general.tex: Formatting macros
+   - macros.tex: Project-specific term definitions (customize this for your paper)
+
+   In main.tex, include:
+   \input{commands/math}
+   \input{commands/general}
+   \input{commands/macros}
+
+5. REFERENCE CONVENTIONS:
+   Use reference macros from math.tex:
+   - \figref{fig:name} for "figure 1" (lowercase, in-sentence)
+   - \Figref{fig:name} for "Figure 1" (capitalized, start of sentence)
+   - \secref{sec:name} for "section 2"
+
+6. TEXT FORMATTING:
+   - Use \para{Header text} for bold paragraph headers
+   - Define method/dataset names with \textsc and \xspace:
+     \newcommand{\methodname}{\textsc{MethodName}\xspace}
+
+7. TABLE FORMATTING:
+   - Use booktabs package (no vertical lines)
+   - Use \resizebox{\textwidth}{!}{...} for wide tables
+   - Use @{} to remove padding at table edges
+   - Use \cmidrule(lr){x-y} for sub-headers
+   - Use \textsc{} for dataset/method names in headers
+   - Bold best results with {\bf ...}
+
+8. FIGURE FORMATTING:
+   - Use 0.32\textwidth for 3-column subfigures
+   - Use 0.95\linewidth for full-width figures
+   - Use \input{figures/legend} for shared legends
+   - Write self-contained captions explaining key observations
+
+9. RESULTS PRESENTATION:
+   - Define \increase and \decrease for colored arrows (green up, red down)
+   - Bold best results in tables
+   - Report confidence intervals when available
+
+10. ALGORITHM STYLING:
+    - Use algpseudocode with [noend]
+    - Use \triangleright for comments
+
+11. HYPERLINKS (REQUIRED):
+    - Always use \usepackage[hidelinks]{hyperref} or with colored links
+    - All citations, section refs, figure refs, table refs must be clickable
+    - This is essential for reader navigation
+
+════════════════════════════════════════════════════════════════════════════════
+                          WORKFLOW: REVIEW AND REFLECT
+════════════════════════════════════════════════════════════════════════════════
+
+Before calling finish, you MUST complete these review steps:
+
+1. REVIEW RESOURCES (at the start):
+   - Read .claude/skills/paper-writer/SKILL.md for detailed guidance
+   - Study templates/paper_writing/lab_style_guide.md for style conventions
+   - Browse paper_examples/ for formatting and language patterns
+
+2. SELF-REFLECTION (before finishing):
+   After writing all sections, review your work against these criteria:
+
+   LANGUAGE CHECK:
+   - [ ] Is the writing clear and jargon-free?
+   - [ ] Are claims specific with quantitative support?
+   - [ ] Is active voice used throughout?
+
+   FORMATTING CHECK:
+   - [ ] Does main.tex include \input{commands/math}, \input{commands/general}, \input{commands/macros}?
+   - [ ] Is hyperref package included for clickable references?
+   - [ ] Do tables use booktabs (no vertical lines)?
+   - [ ] Are best results bolded in tables?
+   - [ ] Are figures/tables properly captioned?
+
+   STRUCTURE CHECK:
+   - [ ] Does introduction follow: hook → importance → gap → approach → preview → contributions?
+   - [ ] Are contribution bullets specific with action verbs?
+   - [ ] Does the paper compile without errors?
+
+3. FIX ISSUES:
+   - Address any issues found in the self-reflection
+   - Re-compile and verify the PDF looks correct
+
+Only after completing this review should you consider the paper finished.

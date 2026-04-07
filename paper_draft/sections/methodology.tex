@@ -1,0 +1,104 @@
+\section{Methodology}
+\label{sec:method}
+
+\subsection{Problem Setup}
+\label{sec:setup}
+
+We consider language model pretraining over a set of $K$ domains $\gD = \{\gD_1, \gD_2, \ldots, \gD_K\}$, where each domain $\gD_k$ contains text sequences from a distinct source (\eg legal documents, scientific abstracts, code). Standard pretraining samples uniformly across all domains. We ask whether a structured curriculum---withholding some domains initially and introducing them later---yields models that adapt faster to new domains.
+
+\subsection{Distribution Shift Curriculum}
+\label{sec:dsc}
+
+We partition the $K$ domains into three groups:
+\begin{itemize}[leftmargin=*,itemsep=0pt,topsep=0pt]
+    \item \textbf{Core domains} $\gD_{\text{core}}$: Available throughout training.
+    \item \textbf{Shift domains} $\gD_{\text{shift}}$: Withheld during Phase~1, introduced in Phase~2.
+    \item \textbf{Held-out domains} $\gD_{\text{held}}$: Never seen during training; used for zero-shot evaluation.
+\end{itemize}
+
+Training proceeds in two phases:
+
+\para{Phase~1} ($T_1$ steps): The model trains on $\gD_{\text{core}}$ only, sampling uniformly across core domains. This concentrates gradient updates on the core domain set.
+
+\para{Phase~2} ($T_2$ steps): The model trains on $\gD_{\text{core}} \cup \gD_{\text{shift}}$, sampling uniformly across all training domains. The introduction of shift domains creates a controlled distribution shift.
+
+The total training budget is $T = T_1 + T_2$ steps, identical to the baseline. We compare against a \uniform baseline that trains on $\gD_{\text{core}} \cup \gD_{\text{shift}}$ for all $T$ steps with uniform sampling.
+
+\subsection{Model Architecture}
+
+We use a GPT-2 style causal language model with the following configuration:
+
+\begin{table}[t]
+\centering
+\caption{Model architecture and training hyperparameters.}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Hyperparameter} & \textbf{Value} \\
+\midrule
+Parameters & 30.1M \\
+Layers & 6 \\
+Attention heads & 6 \\
+Embedding dimension & 384 \\
+Sequence length & 512 \\
+Tokenizer & GPT-2 BPE (50{,}257 vocab) \\
+\bottomrule
+\end{tabular}
+\label{tab:architecture}
+\end{table}
+
+\subsection{Dataset and Domain Partitioning}
+\label{sec:data}
+
+We use 13 domains from \thepile~\cite{gao2020pile} (specifically, the uncopyrighted subset), streaming approximately 500K training tokens and 20K validation tokens per domain. \Tabref{tab:domains} shows the domain partitioning.
+
+\begin{table}[t]
+\centering
+\caption{Domain partitioning into core (always available), shift (withheld then introduced), and held-out (never trained on) groups.}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}llp{8cm}@{}}
+\toprule
+\textbf{Group} & \textbf{Count} & \textbf{Domains} \\
+\midrule
+Core & 9 & Pile-CC, PubMed Abstracts, StackExchange, Github, Wikipedia (en), USPTO Backgrounds, HackerNews, NIH ExPorter, Enron Emails \\
+Shift & 3 & FreeLaw, DM Mathematics, PubMed Central \\
+Held-out & 1 & ArXiv \\
+\bottomrule
+\end{tabular}
+}
+\label{tab:domains}
+\end{table}
+
+The shift domains were chosen to represent diverse distribution types: legal text (FreeLaw), formal mathematics (DM Mathematics), and full-length scientific articles (PubMed Central). ArXiv serves as the held-out domain for zero-shot evaluation.
+
+\subsection{Training Protocol}
+\label{sec:training}
+
+Both conditions run for $T = 3{,}000$ total steps with 3 random seeds (42, 123, 456):
+
+\para{Baseline (\uniform):} 3{,}000 steps on all 12 training domains (core + shift) with uniform sampling.
+
+\para{Curriculum (\dsc):} Phase~1 runs for $T_1 = 1{,}800$ steps (60\% of budget) on core domains only. Phase~2 runs for $T_2 = 1{,}200$ steps (40\%) on all training domains.
+
+Both conditions share identical optimization:
+\begin{itemize}[leftmargin=*,itemsep=0pt,topsep=0pt]
+    \item AdamW optimizer ($\text{lr} = 3 \times 10^{-4}$, weight decay $= 0.01$)
+    \item Constant learning rate (no decay), following \citet{luo2025lrdecay}
+    \item Exponential moving average (EMA) with decay $= 0.999$ for evaluation
+    \item Gradient clipping at max norm 1.0
+    \item Batch size 32, max 800 sequences per domain
+\end{itemize}
+
+\subsection{Adaptation Experiment}
+\label{sec:adaptation}
+
+After training, we evaluate adaptation speed by continuing both models' EMA checkpoints for 500 additional steps on shift domains only, with a reduced learning rate of $1.5 \times 10^{-4}$. We measure perplexity on shift and held-out domains every 100 steps. This simulates a realistic scenario: a pretrained model is adapted to a new target domain.
+
+\subsection{Evaluation}
+\label{sec:eval}
+
+We report per-domain validation perplexity as the primary metric. For statistical testing, we use paired $t$-tests across the 3 seeds, reporting significance at $p < 0.05$. We evaluate three hypotheses:
+\begin{itemize}[leftmargin=*,itemsep=0pt,topsep=0pt]
+    \item \textbf{H1:} \dsc produces faster adaptation to shift domains.
+    \item \textbf{H2:} \dsc converges to comparable perplexity on shift domains despite late introduction.
+    \item \textbf{H3:} \dsc improves zero-shot transfer to held-out domains.
+\end{itemize}

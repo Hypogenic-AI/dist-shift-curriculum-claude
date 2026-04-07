@@ -1,0 +1,152 @@
+{
+  "per_domain": {
+    "Pile-CC": {
+      "baseline_mean": 270.32648595255523,
+      "baseline_std": 2.5120354213544713,
+      "curriculum_mean": 264.97848078897835,
+      "curriculum_std": 1.3096354150156326,
+      "t_statistic": 2.1042482407142247,
+      "p_value": 0.1700274177262286,
+      "cohens_d": 2.669756560401363,
+      "curriculum_better": true
+    },
+    "PubMed Abstracts": {
+      "baseline_mean": 214.72197099186485,
+      "baseline_std": 2.3611583398712854,
+      "curriculum_mean": 192.09019850586697,
+      "curriculum_std": 0.8019997429554685,
+      "t_statistic": 10.391860132193347,
+      "p_value": 0.009133382375624445,
+      "cohens_d": 12.83508350750872,
+      "curriculum_better": true
+    },
+    "StackExchange": {
+      "baseline_mean": 105.67499975463652,
+      "baseline_std": 1.1573056957829795,
+      "curriculum_mean": 101.5844461029592,
+      "curriculum_std": 1.4234181399174497,
+      "t_statistic": 3.536263705919653,
+      "p_value": 0.07149688101529501,
+      "cohens_d": 3.153362242152064,
+      "curriculum_better": true
+    },
+    "Github": {
+      "baseline_mean": 60.465770478645766,
+      "baseline_std": 0.2565708116067623,
+      "curriculum_mean": 57.852780185294534,
+      "curriculum_std": 1.6574641042424005,
+      "t_statistic": 2.518001446864985,
+      "p_value": 0.12810472420952046,
+      "cohens_d": 2.203264848042846,
+      "curriculum_better": true
+    },
+    "Wikipedia (en)": {
+      "baseline_mean": 357.99640534559677,
+      "baseline_std": 2.216890185081071,
+      "curriculum_mean": 356.58810104141406,
+      "curriculum_std": 1.0227450433664687,
+      "t_statistic": 1.1976981320045441,
+      "p_value": 0.3537257909744014,
+      "cohens_d": 0.8157670668505596,
+      "curriculum_better": true
+    },
+    "USPTO Backgrounds": {
+      "baseline_mean": 96.13384617058752,
+      "baseline_std": 0.3921690513381782,
+      "curriculum_mean": 86.6015658490719,
+      "curriculum_std": 0.5203380434978123,
+      "t_statistic": 14.803073295687753,
+      "p_value": 0.004532478403755408,
+      "cohens_d": 20.68941822069833,
+      "curriculum_better": true
+    },
+    "HackerNews": {
+      "baseline_mean": 187.79153707070517,
+      "baseline_std": 1.604108850268059,
+      "curriculum_mean": 178.10157119924915,
+      "curriculum_std": 0.6367557712428825,
+      "t_statistic": 9.773866597030612,
+      "p_value": 0.010306528709172426,
+      "cohens_d": 7.940163906005745,
+      "curriculum_better": true
+    },
+    "NIH ExPorter": {
+      "baseline_mean": 150.91394682203952,
+      "baseline_std": 1.2343932658572396,
+      "curriculum_mean": 133.54877639379035,
+      "curriculum_std": 0.5750677083003723,
+      "t_statistic": 27.308569013982623,
+      "p_value": 0.0013382265913195251,
+      "cohens_d": 18.033867396573203,
+      "curriculum_better": true
+    },
+    "Enron Emails": {
+      "baseline_mean": 73.15111565630026,
+      "baseline_std": 0.33573728079884,
+      "curriculum_mean": 66.42042208845969,
+      "curriculum_std": 0.7039403987360756,
+      "t_statistic": 14.503976534140593,
+      "p_value": 0.004720005664726001,
+      "cohens_d": 12.204870735536485,
+      "curriculum_better": true
+    },
+    "FreeLaw": {
+      "baseline_mean": 52.01893866167333,
+      "baseline_std": 0.5672206227831155,
+      "curriculum_mean": 69.11579155031723,
+      "curriculum_std": 0.751870326451622,
+      "t_statistic": -22.86253310397681,
+      "p_value": 0.0019076872339308217,
+      "cohens_d": -25.67187311596488,
+      "curriculum_better": false
+    },
+    "DM Mathematics": {
+      "baseline_mean": 8.560071386348788,
+      "baseline_std": 0.0337371144379707,
+      "curriculum_mean": 11.548932791421512,
+      "curriculum_std": 0.08934141871120371,
+      "t_statistic": -47.08503632334752,
+      "p_value": 0.0004507549063836697,
+      "cohens_d": -44.26101852608401,
+      "curriculum_better": false
+    },
+    "PubMed Central": {
+      "baseline_mean": 84.01809479942237,
+      "baseline_std": 1.4397337539420845,
+      "curriculum_mean": 98.34332756629605,
+      "curriculum_std": 0.30774143270740406,
+      "t_statistic": -13.673009185330075,
+      "p_value": 0.005306451556142923,
+      "cohens_d": -13.760471592100789,
+      "curriculum_better": false
+    },
+    "ArXiv": {
+      "baseline_mean": 179.48745005102475,
+      "baseline_std": 8.963297525810038,
+      "curriculum_mean": 184.55012812575453,
+      "curriculum_std": 1.645093131116598,
+      "t_statistic": -0.8772434979588335,
+      "p_value": 0.4728732323772641,
+      "cohens_d": -0.7856574755117922,
+      "curriculum_better": false
+    }
+  },
+  "adaptation": {
+    "shift": {
+      "baseline_init_ppl": 47.64294859631045,
+      "curriculum_init_ppl": 57.61285375978637,
+      "baseline_final_ppl": 44.37387666175974,
+      "curriculum_final_ppl": 48.53142209386649,
+      "baseline_improvement": 3.269071934550709,
+      "curriculum_improvement": 9.08143166591988
+    },
+    "held_out": {
+      "baseline_init_ppl": 179.24636090101754,
+      "curriculum_init_ppl": 183.61462198788436,
+      "baseline_final_ppl": 189.9683932659693,
+      "curriculum_final_ppl": 191.56380184353802,
+      "baseline_improvement": -10.722032364951758,
+      "curriculum_improvement": -7.949179855653654
+    }
+  }
+}

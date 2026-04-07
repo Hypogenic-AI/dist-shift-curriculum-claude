@@ -1,0 +1,8 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+We introduced the \emph{distribution shift curriculum} (\dsc), a pretraining strategy that withholds specific data domains and introduces them later to create controlled distribution shifts. Our experiments on a 30M-parameter GPT-2 model across 13 domains from \thepile show that \dsc produces models that adapt 2.8$\times$ faster to new domains (9.1 vs.\ 3.3 perplexity improvement over 500 adaptation steps) while unexpectedly improving performance on core domains by 5.3\% on average. However, \dsc does not improve zero-shot transfer to completely unseen domains, and models end training with a perplexity gap on shift domains they saw for fewer steps.
+
+The key practical takeaway is that \dsc is most valuable when the deployment scenario involves adapting a pretrained model to a known set of target domains. The faster adaptation could reduce fine-tuning costs for domain specialization---a common bottleneck when deploying language models in fields like law, medicine, or scientific research.
+
+Several directions merit further investigation. First, scaling experiments to 124M--1.3B parameters would test whether the observed effects persist at more practical model sizes. Second, introducing multiple distribution shifts in sequence (Phase~1 $\to$ 2 $\to$ 3 $\to$ 4) could amplify the adaptation speed advantage through repeated shift exposure. Third, combining \dsc with Group DRO~\cite{sagawa2019dro} or optimized domain mixtures~\cite{xie2023doremi} during Phase~2 may close the shift-domain perplexity gap while retaining the adaptation speed benefit.

@@ -1,0 +1,263 @@
+[
+  {
+    "title": "Pre-training a BERT with Curriculum Learning by Increasing Block-Size of Input Text",
+    "year": 2021,
+    "authors": "Koichi Nagatsuka, Clifford Broni-Bediako, Masayasu Atsumi",
+    "url": "https://www.semanticscholar.org/paper/a09eceb434c700233ccc31ea02656018f168106d",
+    "relevance": 3,
+    "abstract": "Recently, pre-trained language representation models such as BERT and RoBERTa have achieved significant results in a wide range of natural language processing (NLP) tasks, however, it requires extremely high computational cost. Curriculum Learning (CL) is one of the potential solutions to alleviate this problem. CL is a training strategy where training samples are given to models in a meaningful order instead of random sampling. In this work, we propose a new CL method which gradually increases the block-size of input text for training the self-attention mechanism of BERT and its variants using the maximum available batch-size. Experiments in low-resource settings show that our approach outperforms the baseline in terms of convergence speed and final performance on downstream tasks.",
+    "citations": 40
+  },
+  {
+    "title": "Invariant Risk Minimization",
+    "year": 2019,
+    "authors": "Mart\u00edn Arjovsky, L. Bottou, Ishaan Gulrajani, David Lopez-Paz",
+    "url": "https://www.semanticscholar.org/paper/753b7a701adc1b6072378bd048cfa8567885d9c7",
+    "relevance": 3,
+    "abstract": "We introduce Invariant Risk Minimization (IRM), a learning paradigm to estimate invariant correlations across multiple training distributions. To achieve this goal, IRM learns a data representation such that the optimal classifier, on top of that data representation, matches for all training distributions. Through theory and experiments, we show how the invariances learned by IRM relate to the causal structures governing the data and enable out-of-distribution generalization.",
+    "citations": 2668
+  },
+  {
+    "title": "Distributionally Robust Neural Networks for Group Shifts: On the Importance of Regularization for Worst-Case Generalization",
+    "year": 2019,
+    "authors": "Shiori Sagawa, Pang Wei Koh, Tatsunori B. Hashimoto, Percy Liang",
+    "url": "https://www.semanticscholar.org/paper/193092aef465bec868d1089ccfcac0279b914bda",
+    "relevance": 3,
+    "abstract": "Overparameterized neural networks can be highly accurate on average on an i.i.d. test set yet consistently fail on atypical groups of the data (e.g., by learning spurious correlations that hold on average but not in such groups). Distributionally robust optimization (DRO) allows us to learn models that instead minimize the worst-case training loss over a set of pre-defined groups. However, we find that naively applying group DRO to overparameterized neural networks fails: these models can perfectly fit the training data, and any model with vanishing average training loss also already has vanishing worst-case training loss. Instead, the poor worst-case performance arises from poor generalization on some groups. By coupling group DRO models with increased regularization---a stronger-than-typical L2 penalty or early stopping---we achieve substantially higher worst-group accuracies, with 10-40 percentage point improvements on a natural language inference task and two image tasks, while maintaining high average accuracies. Our results suggest that regularization is important for worst-group generalization in the overparameterized regime, even if it is not needed for average generalization. Finally, we introduce a stochastic optimization algorithm, with convergence guarantees, to efficiently train group DRO models.",
+    "citations": 1537
+  },
+  {
+    "title": "Out-of-Distribution Generalization via Risk Extrapolation (REx)",
+    "year": 2020,
+    "authors": "David Krueger, Ethan Caballero, J. Jacobsen, Amy Zhang, Jonathan Binas, R\u00e9mi Le Priol, Aaron C. Courville",
+    "url": "https://www.semanticscholar.org/paper/3621fff4a1c791901ea4a1359c10575193ec712d",
+    "relevance": 3,
+    "abstract": "Generalizing outside of the training distribution is an open challenge for current machine learning systems. A weak form of out-of-distribution (OoD) generalization is the ability to successfully interpolate between multiple observed distributions. One way to achieve this is through robust optimization, which seeks to minimize the worst-case risk over convex combinations of the training distributions. However, a much stronger form of OoD generalization is the ability of models to extrapolate beyond the distributions observed during training. In pursuit of strong OoD generalization, we introduce the principle of Risk Extrapolation (REx). REx can be viewed as encouraging robustness over affine combinations of training risks, by encouraging strict equality between training risks. We show conceptually how this principle enables extrapolation, and demonstrate the effectiveness and scalability of instantiations of REx on various OoD generalization tasks. Our code can be found at this https URL.",
+    "citations": 1143
+  },
+  {
+    "title": "Skill-it! A Data-Driven Skills Framework for Understanding and Training Language Models",
+    "year": 2023,
+    "authors": "Mayee F. Chen, Nicholas Roberts, K. Bhatia, Jue Wang, Ce Zhang, Frederic Sala, Christopher R\u00e9",
+    "url": "https://api.semanticscholar.org/CorpusId:260203057",
+    "relevance": 3,
+    "abstract": "The quality of training data impacts the performance of pre-trained large language models (LMs). Given a fixed budget of tokens, we study how to best select data that leads to good downstream model performance across tasks. We develop a new framework based on a simple hypothesis: just as humans acquire interdependent skills in a deliberate order, language models also follow a natural order when learning a set of skills from their training data. If such an order exists, it can be utilized for improved understanding of LMs and for data-efficient training. Using this intuition, our framework formalizes the notion of a skill and of an ordered set of skills in terms of the associated data. First, using both synthetic and real data, we demonstrate that these ordered skill sets exist, and that their existence enables more advanced skills to be learned with less data when we train on their prerequisite skills. Second, using our proposed framework, we introduce an online data sampling algorithm, Skill-It, over mixtures of skills for both continual pre-training and fine-tuning regimes, where the objective is to efficiently learn multiple skills in the former and an individual skill in the latter. On the LEGO synthetic in the continual pre-training setting, Skill-It obtains 36.5 points higher accuracy than random sampling. On the Natural Instructions dataset in the fine-tuning setting, Skill-It reduces the validation loss on the target skill by 13.6% versus training on data associated with the target skill itself. We apply our skills framework on the recent RedPajama dataset to continually pre-train a 3B-parameter LM, achieving higher accuracy on the LM Evaluation Harness with 1B tokens than the baseline approach of sampling uniformly over data sources with 3B tokens.",
+    "citations": 103
+  },
+  {
+    "title": "DeepSpeed Data Efficiency: Improving Deep Learning Model Quality and Training Efficiency via Efficient Data Sampling and Routing",
+    "year": 2022,
+    "authors": "Conglong Li, Z. Yao, Xiaoxia Wu, Minjia Zhang, Yuxiong He",
+    "url": "https://api.semanticscholar.org/CorpusId:254366532",
+    "relevance": 3,
+    "abstract": "Recent advances on deep learning models come at the price of formidable training cost. The increasing model size is one of the root causes, but another less-emphasized fact is that data scale is actually increasing at a similar speed as model scale, and the training cost is proportional to both of them. Compared to the rapidly evolving model architecture, how to efficiently use the training data (especially for the expensive foundation model pretraining) is both less explored and difficult to realize due to the lack of a convenient framework that focus on data efficiency capabilities. To this end, we present DeepSpeed Data Efficiency, a framework that makes better use of data, increases training efficiency, and improves model quality. Specifically, we propose and combine two data efficiency techniques: efficient data sampling via a general curriculum learning library, and efficient data routing via a novel random layerwise token dropping technique. For GPT-3 1.3B language model pretraining, our work achieves 12.5x less data/time/cost ($3.7K if rent on Azure), while still maintaining 95% of model quality compared to baseline with full data and cost ($46.3K). For GPT-3 1.3B and BERT-large pretraining, our work can also achieve the same model quality with up to 2x less data/time/cost, or achieve better model quality under same data/time/cost. DeepSpeed Data Efficiency is easy to use and tune, enabling us to easily apply it and verify its benefit on additional tasks including GPT-3 MoE model pretraining and small-scale GPT-2/ViT finetuning.",
+    "citations": 42
+  },
+  {
+    "title": "Curriculum learning for language modeling",
+    "year": 2021,
+    "authors": "Daniel Fernando Campos",
+    "url": "https://api.semanticscholar.org/CorpusId:236912520",
+    "relevance": 3,
+    "abstract": "Language Models like ELMo and BERT have provided robust representations of natural language, which serve as the language understanding component for a diverse range of downstream tasks.Curriculum learning is a method that employs a structured training regime instead, which has been leveraged in computer vision and machine translation to improve model training speed and model performance. While language models have proven transformational for the natural language processing community, these models have proven expensive, energy-intensive, and challenging to train. In this work, we explore the effect of curriculum learning on language model pretraining using various linguistically motivated curricula and evaluate transfer performance on the GLUE Benchmark. Despite a broad variety of training methodologies and experiments we do not find compelling evidence that curriculum learning methods improve language model training.",
+    "citations": 39
+  },
+  {
+    "title": "Pre-training a BERT with Curriculum Learning by Increasing Block-Size of Input Text",
+    "year": 2021,
+    "authors": "Koichi Nagatsuka, Clifford Broni-Bediako, Masayasu Atsumi",
+    "url": "https://www.semanticscholar.org/paper/a09eceb434c700233ccc31ea02656018f168106d",
+    "relevance": 3,
+    "abstract": "Recently, pre-trained language representation models such as BERT and RoBERTa have achieved significant results in a wide range of natural language processing (NLP) tasks, however, it requires extremely high computational cost. Curriculum Learning (CL) is one of the potential solutions to alleviate this problem. CL is a training strategy where training samples are given to models in a meaningful order instead of random sampling. In this work, we propose a new CL method which gradually increases the block-size of input text for training the self-attention mechanism of BERT and its variants using the maximum available batch-size. Experiments in low-resource settings show that our approach outperforms the baseline in terms of convergence speed and final performance on downstream tasks.",
+    "citations": 40
+  },
+  {
+    "title": "Length-Based Curriculum Learning for Efficient Pre-training of Language Models",
+    "year": 2022,
+    "authors": "Koichi Nagatsuka, Clifford Broni-Bediako, Masayasu Atsumi",
+    "url": "https://www.semanticscholar.org/paper/47bb90821f9e57d3e9184954de1c71005678f085",
+    "relevance": 3,
+    "abstract": "",
+    "citations": 20
+  },
+  {
+    "title": "Irreducible Curriculum for Language Model Pretraining",
+    "year": 2023,
+    "authors": "Simin Fan, Martin Jaggi",
+    "url": "https://api.semanticscholar.org/CorpusId:264439064",
+    "relevance": 3,
+    "abstract": "Automatic data selection and curriculum design for training large language models is challenging, with only a few existing methods showing improvements over standard training. Furthermore, current schemes focus on domain-level selection, overlooking the more fine-grained contributions of each individual training point. It is difficult to apply traditional datapoint selection methods on large language models: most online batch selection methods perform two-times forward or backward passes, which introduces considerable extra costs with large-scale models. To mitigate these obstacles, we propose irreducible curriculum as a curriculum learning algorithm for language model pretraining, which prioritizes samples with higher learnability. Specifically, to avoid prohibitive extra computation overhead, we simulate the sample loss along the main model's training trajectory using a small-scale proxy model. Our experiments on the RedPajama-1B dataset demonstrate a consistent improvement on validation perplexity across all 7 domains compared to random uniform baseline and the anti-curriculum strategy. Our method also reduces the sharpness of the network and illustrates a better 5-shot accuracy on MMLU benchmarks.",
+    "citations": 15
+  },
+  {
+    "title": "Strategic Data Ordering: Enhancing Large Language Model Performance through Curriculum Learning",
+    "year": 2024,
+    "authors": "Jisu Kim, Juhwan Lee",
+    "url": "https://api.semanticscholar.org/CorpusId:269756933",
+    "relevance": 3,
+    "abstract": "The rapid advancement of Large Language Models (LLMs) has improved text understanding and generation but poses challenges in computational resources. This study proposes a curriculum learning-inspired, data-centric training strategy that begins with simpler tasks and progresses to more complex ones, using criteria such as prompt length, attention scores, and loss values to structure the training data. Experiments with Mistral-7B (Jiang et al., 2023) and Gemma-7B (Team et al., 2024) models demonstrate that curriculum learning slightly improves performance compared to traditional random data shuffling. Notably, we observed that sorting data based on our proposed attention criteria generally led to better performance. This approach offers a sustainable method to enhance LLM performance without increasing model size or dataset volume, addressing scalability challenges in LLM training.",
+    "citations": 26
+  },
+  {
+    "title": "On the Role of Corpus Ordering in Language Modeling",
+    "year": 2021,
+    "authors": "Ameeta Agrawal, Suresh Singh, Lauren Schneider, Michael Samuels",
+    "url": "https://api.semanticscholar.org/CorpusId:237553761",
+    "relevance": 3,
+    "abstract": "Language models pretrained on vast corpora of unstructured text using self-supervised learning framework are used in numerous natural language understanding and generation tasks. Many studies show that language acquisition in humans follows a rather structured simple-to-complex pattern and guided by this intuition, curriculum learning, which enables training of computational models in a meaningful order, such as processing easy samples before hard ones, has been shown to potentially reduce training time. The question remains whether curriculum learning can benefit pretraining of language models. In this work, we perform comprehensive experiments involving multiple curricula strategies varying the criteria for complexity and the training schedules. Empirical results of training transformer language models on English corpus and evaluating it intrinsically as well as after fine-tuning across eight tasks from the GLUE benchmark, show consistent improvement gains over conventional vanilla training. Interestingly, in our experiments, when evaluated on one epoch, the best model following a document-level hard-to-easy curriculum, outperforms the vanilla model by 1.7 points (average GLUE score) and it takes the vanilla model twice as many training steps to reach comparable performance.",
+    "citations": 9
+  },
+  {
+    "title": "Preference Curriculum: LLMs Should Always Be Pretrained on Their Preferred Data",
+    "year": 2025,
+    "authors": "Xuemiao Zhang, Liangyu Xu, Feiyu Duan, Yongwei Zhou, Sirui Wang, Jingang Wang, Xunliang Cai",
+    "url": "https://api.semanticscholar.org/CorpusId:275820163",
+    "relevance": 3,
+    "abstract": "Large language models (LLMs) generally utilize a consistent data distribution throughout the pretraining process. However, as the model's capability improves, it is intuitive that its data preferences dynamically change, indicating the need for pretraining with different data at various training stages. To achieve it, we propose the Perplexity Difference (PD) based Preference Curriculum learning (PDPC) framework, which always perceives and uses the data preferred by LLMs to train and boost them. First, we introduce the PD metric to quantify the difference in how challenging a sample is for weak versus strong models. Samples with high PD are more challenging for weak models to learn and are more suitable to be arranged in the later stage of pretraining. Second, we propose the preference function to approximate and predict the data preference of the LLM at any training step, so as to complete the arrangement of the dataset offline and ensure continuous training without interruption. Experimental results on 1.3B and 3B models demonstrate that PDPC significantly surpasses baselines. Notably, the 3B model trained on 1T tokens achieves an increased average accuracy of over 8.1% across MMLU and CMMLU.",
+    "citations": 14
+  },
+  {
+    "title": "How Learning Rate Decay Wastes Your Best Data in Curriculum-Based LLM Pretraining",
+    "year": 2025,
+    "authors": "Kairong Luo, Zhenbo Sun, Haodong Wen, Xinyu Shi, Jiarui Cui, Chenyi Dang, Kaifeng Lyu, Wenguang Chen",
+    "url": "https://api.semanticscholar.org/CorpusId:283243676",
+    "relevance": 3,
+    "abstract": "Due to the scarcity of high-quality data, large language models (LLMs) are often trained on mixtures of data with varying quality levels, even after sophisticated data curation. A natural approach to better leverage high-quality data is curriculum-based pretraining, where the model is trained on data sorted in ascending order of quality as determined by a quality metric. However, prior studies have reported limited improvements from such curriculum-based pretraining strategies. This work identifies a critical factor constraining these methods: the incompatibility between the ascending data quality order and the decaying learning rate (LR) schedule. We find that while curriculum-based training substantially outperforms random shuffling when using a constant LR, its advantage diminishes under standard LR decay schedules. Our experiments show this incompatibility can be mitigated by two simple strategies: (1) employing a more moderate LR decay schedule, where the final LR is only moderately smaller than the peak LR, and (2) replacing LR decay with model averaging, i.e., computing a weighted average of the final few checkpoints. By combining these strategies, we improve the average score on a suite of standard benchmarks by 1.64% over random shuffling, without additional data refinement. Validated on 1.5B-parameter models trained over 30B tokens with various data-quality metrics, our findings call for a re-evaluation of curriculum-based LLM pretraining and underscore the potential of co-designing data curricula with optimization methods.",
+    "citations": 3
+  },
+  {
+    "title": "Curriculum-Guided Layer Scaling for Language Model Pretraining",
+    "year": 2025,
+    "authors": "Karanpartap Singh, Neil Band, Ehsan Adeli",
+    "url": "https://api.semanticscholar.org/CorpusId:279391223",
+    "relevance": 3,
+    "abstract": "As the cost of pretraining large language models grows, there is continued interest in strategies to improve learning efficiency during this core training stage. Motivated by cognitive development, where humans gradually build knowledge as their brains mature, we propose Curriculum-Guided Layer Scaling (CGLS), a framework for compute-efficient pretraining that synchronizes increasing data difficulty with model growth through progressive layer stacking (i.e. gradually adding layers during training). At the 100M parameter scale, using a curriculum transitioning from synthetic short stories to general web data, CGLS outperforms baseline methods on the question-answering benchmarks PIQA and ARC. Pretraining at the 1.2B scale, we stratify the DataComp-LM corpus with a DistilBERT-based classifier and progress from general text to highly technical or specialized content. Our results show that progressively increasing model depth alongside sample difficulty leads to better generalization and zero-shot performance on various downstream benchmarks. Altogether, our findings demonstrate that CGLS unlocks the potential of progressive stacking, offering a simple yet effective strategy for improving generalization on knowledge-intensive and reasoning tasks.",
+    "citations": 2
+  },
+  {
+    "title": "Beyond Random Sampling: Efficient Language Model Pretraining via Curriculum Learning",
+    "year": 2025,
+    "authors": "Yang Zhang, Amr Mohamed, Hadi Abdine, Guokan Shang, M. Vazirgiannis",
+    "url": "https://api.semanticscholar.org/CorpusId:279392162",
+    "relevance": 3,
+    "abstract": "Curriculum learning-organizing training data from easy to hard-has improved efficiency across machine learning domains, yet remains underexplored for language model pretraining. We present the first systematic investigation of curriculum learning in LLM pretraining, with over 200 models trained on up to 100B tokens across three strategies: vanilla curriculum learning, pacing-based sampling, and interleaved curricula, guided by six difficulty metrics spanning linguistic and information-theoretic properties. We evaluate performance on eight benchmarks under three realistic scenarios: limited data, unlimited data, and continual training. Our experiments show that curriculum learning consistently accelerates convergence in early and mid-training phases,reducing training steps by $18-45\\%$ to reach baseline performance. When applied as a warmup strategy before standard random sampling, curriculum learning yields sustained improvements up to $3.5\\%$. We identify compression ratio, lexical diversity (MTLD), and readability (Flesch Reading Ease) as the most effective difficulty signals. Our findings demonstrate that data ordering-orthogonal to existing data selection methods-provides a practical mechanism for more efficient LLM pretraining.",
+    "citations": 10
+  },
+  {
+    "title": "Curriculum learning",
+    "year": 2009,
+    "authors": "Yoshua Bengio, J. Louradour, R. Collobert, J. Weston",
+    "url": "https://www.semanticscholar.org/paper/8de174ab5419b9d3127695405efd079808e956e8",
+    "relevance": 3,
+    "abstract": "",
+    "citations": 6798
+  },
+  {
+    "title": "An Empirical Study on Distribution Shift Robustness From the Perspective of Pre-Training and Data Augmentation",
+    "year": 2022,
+    "authors": "Ziquan Liu, Yi Xu, Yuanhong Xu, Qi Qian, Hao Li, Rong Jin, Xiangyang Ji, Antoni B. Chan",
+    "url": "https://api.semanticscholar.org/CorpusId:249062773",
+    "relevance": 3,
+    "abstract": "The performance of machine learning models under distribution shift has been the focus of the community in recent years. Most of current methods have been proposed to improve the robustness to distribution shift from the algorithmic perspective, i.e., designing better training algorithms to help the generalization in shifted test distributions. This paper studies the distribution shift problem from the perspective of pre-training and data augmentation, two important factors in the practice of deep learning that have not been systematically investigated by existing work. By evaluating seven pre-trained models, including ResNets and ViT's with self-supervision and supervision mode, on five important distribution-shift datasets, from WILDS and DomainBed benchmarks, with five different learning algorithms, we provide the first comprehensive empirical study focusing on pre-training and data augmentation. With our empirical result obtained from 1,330 models, we provide the following main observations: 1) ERM combined with data augmentation can achieve state-of-the-art performance if we choose a proper pre-trained model respecting the data property; 2) specialized algorithms further improve the robustness on top of ERM when handling a specific type of distribution shift, e.g., GroupDRO for spurious correlation and CORAL for large-scale out-of-distribution data; 3) Comparing different pre-training modes, architectures and data sizes, we provide novel observations about pre-training on distribution shift, which sheds light on designing or selecting pre-training strategy for different kinds of distribution shifts. In summary, our empirical study provides a comprehensive baseline for a wide range of pre-training models fine-tuned with data augmentation, which potentially inspires research exploiting the power of pre-training and data augmentation in the future of distribution shift study.",
+    "citations": 21
+  },
+  {
+    "title": "Findings of the BabyLM Challenge: Sample-Efficient Pretraining on Developmentally Plausible Corpora",
+    "year": 2025,
+    "authors": "Alex Warstadt, Aaron Mueller, Leshem Choshen, E. Wilcox, Chengxu Zhuang, Juan Ciro, Rafael Mosquera, Bhargavi Paranjabe, Adina Williams, Tal Linzen, Ryan Cotterell",
+    "url": "https://www.semanticscholar.org/paper/2c33767ebb48667c4b25d5adbc4d83046dee3eab",
+    "relevance": 3,
+    "abstract": "Children can acquire language from less than 100 million words of input. Large language models are far less data-efficient: they typically require 3 or 4 orders of magnitude more data and still do not perform as well as humans on many evaluations. These intensive resource demands limit the ability of researchers to train new models and use existing models as developmentally plausible cognitive models. The BabyLM Challenge is a communal effort in which participants compete to optimize language model training on a fixed data budget. Submissions are compared on various evaluation tasks targeting grammatical ability, downstream task performance, and generalization. Participants can submit to up to three tracks with progressively looser data restrictions. From over 30 submissions, we extract concrete recommendations on how best to train data-efficient language models, and on where future efforts should (and perhaps should not) focus. The winning submissions using the LTG-BERT architecture (Samuel et al., 2023) outperformed models trained on trillions of words. Other submissions achieved strong results through training on shorter input sequences or training a student model on a pretrained teacher. Curriculum learning attempts, which accounted for a large number of submissions, were largely unsuccessful, though some showed modest improvements.",
+    "citations": 195
+  },
+  {
+    "title": "CLIMB: Curriculum Learning for Infant-inspired Model Building",
+    "year": 2023,
+    "authors": "Richard Diehl Martinez, Z\u00e9bulon Goriely, Hope McGovern, Christopher Davis, Andrew Caines, P. Buttery, Lisa Beinborn",
+    "url": "https://api.semanticscholar.org/CorpusId:265213396",
+    "relevance": 3,
+    "abstract": "We describe our team's contribution to the STRICT-SMALL track of the BabyLM Challenge. The challenge requires training a language model from scratch using only a relatively small training dataset of ten million words. We experiment with three variants of cognitively-motivated curriculum learning and analyze their effect on the performance of the model on linguistic evaluation tasks. In the vocabulary curriculum, we analyze methods for constraining the vocabulary in the early stages of training to simulate cognitively more plausible learning curves. In the data curriculum experiments, we vary the order of the training instances based on i) infant-inspired expectations and ii) the learning behavior of the model. In the objective curriculum, we explore different variations of combining the conventional masked language modeling task with a more coarse-grained word class prediction task to reinforce linguistic generalization capabilities. Our results did not yield consistent improvements over our own non-curriculum learning baseline across a range of linguistic benchmarks; however, we do find marginal gains on select tasks. Our analysis highlights key takeaways for specific combinations of tasks and settings which benefit from our proposed curricula. We moreover determine that careful selection of model architecture, and training hyper-parameters yield substantial improvements over the default baselines provided by the BabyLM challenge.",
+    "citations": 27
+  },
+  {
+    "title": "Curriculum learning",
+    "year": 2009,
+    "authors": "Yoshua Bengio, J. Louradour, R. Collobert, J. Weston",
+    "url": "https://www.semanticscholar.org/paper/8de174ab5419b9d3127695405efd079808e956e8",
+    "relevance": 3,
+    "abstract": "",
+    "citations": 6798
+  },
+  {
+    "title": "Focus on the Common Good: Group Distributional Robustness Follows",
+    "year": 2021,
+    "authors": "Vihari Piratla, Praneeth Netrapalli, S. Sarawagi",
+    "url": "https://www.semanticscholar.org/paper/1e57462f93d78279549a8508e691dc4920151b35",
+    "relevance": 3,
+    "abstract": "We consider the problem of training a classification model with group annotated training data. Recent work has established that, if there is distribution shift across different groups, models trained using the standard empirical risk minimization (ERM) objective suffer from poor performance on minority groups and that group distributionally robust optimization (Group-DRO) objective is a better alternative. The starting point of this paper is the observation that though Group-DRO performs better than ERM on minority groups for some benchmark datasets, there are several other datasets where it performs much worse than ERM. Inspired by ideas from the closely related problem of domain generalization, this paper proposes a new and simple algorithm that explicitly encourages learning of features that are shared across various groups. The key insight behind our proposed algorithm is that while Group-DRO focuses on groups with worst regularized loss, focusing instead, on groups that enable better performance even on other groups, could lead to learning of shared/common features, thereby enhancing minority performance beyond what is achieved by Group-DRO. Empirically, we show that our proposed algorithm matches or achieves better performance compared to strong contemporary baselines including ERM and Group-DRO on standard benchmarks on both minority groups and across all groups. Theoretically, we show that the proposed algorithm is a descent method and finds first order stationary points of smooth nonconvex functions.",
+    "citations": 31
+  },
+  {
+    "title": "Generalizing to Unseen Domains: A Survey on Domain Generalization",
+    "year": 2021,
+    "authors": "Jindong Wang, Cuiling Lan, Chang Liu, Yidong Ouyang, Tao Qin",
+    "url": "https://www.semanticscholar.org/paper/93884d89dfc8c3886f642018227a43fb7b58044f",
+    "relevance": 3,
+    "abstract": "Machine learning systems generally assume that the training and testing distributions are the same. To this end, a key requirement is to develop models that can generalize to unseen distributions. Domain generalization (DG), i.e., out-of-distribution generalization, has attracted increasing interests in recent years. Domain generalization deals with a challenging setting where one or several different but related domain(s) are given, and the goal is to learn a model that can generalize to an unseen test domain. Great progress has been made in the area of domain generalization for years. This paper presents the first review of recent advances in this area. First, we provide a formal definition of domain generalization and discuss several related fields. We then thoroughly review the theories related to domain generalization and carefully analyze the theory behind generalization. We categorize recent algorithms into three classes: data manipulation, representation learning, and learning strategy, and present several popular algorithms in detail for each category. Third, we introduce the commonly used datasets, applications, and our open-sourced codebase for fair evaluation. Finally, we summarize existing literature and present some potential research topics for the future.",
+    "citations": 1659
+  },
+  {
+    "title": "Scaling LLM Pre-training with Vocabulary Curriculum",
+    "year": 2025,
+    "authors": "Fangyuan Yu",
+    "url": "https://www.semanticscholar.org/paper/767250d4d6cf1c24606e5ebe507dc808b900d145",
+    "relevance": 2,
+    "abstract": "Modern language models rely on static vocabularies, fixed before pretraining, in contrast to the adaptive vocabulary acquisition observed in human language learning. To bridge this gap, we introduce vocabulary curriculum learning, an approach that improves pretraining efficiency with log-linear scaling gains relative to vocabulary size. Our method alternates between entropy-guided vocabulary expansion and model optimization, enabling models to learn transferable representations across diverse tokenization granularities. This approach naturally gives rise to an optimal computation allocation pattern: longer tokens capture predictable content, while shorter tokens focus on more complex, harder-to-predict contexts. Experiments on small-scale GPT models demonstrate improved scaling efficiency, reinforcing the effectiveness of dynamic tokenization. We release our code to support further research and plan to extend our experiments to larger models and diverse domains.",
+    "citations": 3
+  },
+  {
+    "title": "WILDS: A Benchmark of in-the-Wild Distribution Shifts",
+    "year": 2020,
+    "authors": "Pang Wei Koh, Shiori Sagawa, H. Marklund, Sang Michael Xie, Marvin Zhang, Akshay Balsubramani, Weihua Hu, Michihiro Yasunaga, R. L. Phillips, Irena Gao, Tony Lee, Etiene David, I. Stavness, Wei Guo, Berton A. Earnshaw, I. Haque, Sara Beery, J. Leskovec, Anshul B Kundaje, Emma Pierson, Sergey Levine, Chelsea Finn, Percy Liang",
+    "url": "https://www.semanticscholar.org/paper/40848b41ed8c9c255ecd8a920006877691b52d03",
+    "relevance": 2,
+    "abstract": "Distribution shifts -- where the training distribution differs from the test distribution -- can substantially degrade the accuracy of machine learning (ML) systems deployed in the wild. Despite their ubiquity in the real-world deployments, these distribution shifts are under-represented in the datasets widely used in the ML community today. To address this gap, we present WILDS, a curated benchmark of 10 datasets reflecting a diverse range of distribution shifts that naturally arise in real-world applications, such as shifts across hospitals for tumor identification; across camera traps for wildlife monitoring; and across time and location in satellite imaging and poverty mapping. On each dataset, we show that standard training yields substantially lower out-of-distribution than in-distribution performance. This gap remains even with models trained by existing methods for tackling distribution shifts, underscoring the need for new methods for training models that are more robust to the types of distribution shifts that arise in practice. To facilitate method development, we provide an open-source package that automates dataset loading, contains default model architectures and hyperparameters, and standardizes evaluations. Code and leaderboards are available at https://wilds.stanford.edu.",
+    "citations": 1739
+  },
+  {
+    "title": "Curriculum learning",
+    "year": 2009,
+    "authors": "Yoshua Bengio, J. Louradour, R. Collobert, J. Weston",
+    "url": "https://www.semanticscholar.org/paper/8de174ab5419b9d3127695405efd079808e956e8",
+    "relevance": 3,
+    "abstract": "",
+    "citations": 6798
+  },
+  {
+    "title": "Curriculum learning",
+    "year": 2009,
+    "authors": "Yoshua Bengio, J. Louradour, R. Collobert, J. Weston",
+    "url": "https://www.semanticscholar.org/paper/8de174ab5419b9d3127695405efd079808e956e8",
+    "relevance": 3,
+    "abstract": "",
+    "citations": 6798
+  },
+  {
+    "title": "Improving out-of-distribution generalization via multi-task self-supervised pretraining",
+    "year": 2020,
+    "authors": "Isabela Albuquerque, N. Naik, Junnan Li, N. Keskar, R. Socher",
+    "url": "https://api.semanticscholar.org/CorpusId:214714010",
+    "relevance": 3,
+    "abstract": "Self-supervised feature representations have been shown to be useful for supervised classification, few-shot learning, and adversarial robustness. We show that features obtained using self-supervised learning are comparable to, or better than, supervised learning for domain generalization in computer vision. We introduce a new self-supervised pretext task of predicting responses to Gabor filter banks and demonstrate that multi-task learning of compatible pretext tasks improves domain generalization performance as compared to training individual tasks alone. Features learnt through self-supervision obtain better generalization to unseen domains when compared to their supervised counterpart when there is a larger domain shift between training and test distributions and even show better localization ability for objects of interest. Self-supervised feature representations can also be combined with other domain generalization methods to further boost performance.",
+    "citations": 44
+  },
+  {
+    "title": "Robust and Generalizable Visual Representation Learning via Random Convolutions",
+    "year": 2020,
+    "authors": "Zhenlin Xu, Deyi Liu, Junlin Yang, M. Niethammer",
+    "url": "https://www.semanticscholar.org/paper/b27ad18e20d27efe8a9fbc54b1c2dcef8b2da19f",
+    "relevance": 3,
+    "abstract": "While successful for various computer vision tasks, deep neural networks have shown to be vulnerable to texture style shifts and small perturbations to which humans are robust. Hence, our goal is to train models in such a way that improves their robustness to these perturbations. We are motivated by the approximately shape-preserving property of randomized convolutions, which is due to distance preservation under random linear transforms. Intuitively, randomized convolutions create an infinite number of new domains with similar object shapes but random local texture. Therefore, we explore using outputs of multi-scale random convolutions as new images or mixing them with the original images during training. When applying a network trained with our approach to unseen domains, our method consistently improves the performance on domain generalization benchmarks and is scalable to ImageNet. Especially for the challenging scenario of generalizing to the sketch domain in PACS and to ImageNet-Sketch, our method outperforms state-of-art methods by a large margin. More interestingly, our method can benefit downstream tasks by providing a more robust pretrained visual representation.",
+    "citations": 261
+  }
+]

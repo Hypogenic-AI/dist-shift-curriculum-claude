@@ -1,0 +1,46 @@
+[
+  {
+    "title": "Strategic Data Ordering: Enhancing Large Language Model Performance through Curriculum Learning",
+    "file": "papers/2405.07490_Strategic_Data_Ordering_Enhancing_Large_Language_Model_Perfo.pdf",
+    "arxiv_id": "2405.07490",
+    "year": 2024,
+    "authors": "Jisu Kim, Juhwan Lee",
+    "url": "https://api.semanticscholar.org/CorpusId:269756933",
+    "relevance": 3,
+    "abstract": "The rapid advancement of Large Language Models (LLMs) has improved text understanding and generation but poses challenges in computational resources. This study proposes a curriculum learning-inspired, data-centric training strategy that begins with simpler tasks and progresses to more complex ones, using criteria such as prompt length, attention scores, and loss values to structure the training data. Experiments with Mistral-7B (Jiang et al., 2023) and Gemma-7B (Team et al., 2024) models demonstrate that curriculum learning slightly improves performance compared to traditional random data shuffling. Notably, we observed that sorting data based on our proposed attention criteria generally led to better performance. This approach offers a sustainable method to enhance LLM performance without increasing model size or dataset volume, addressing scalability challenges in LLM training.",
+    "citations": 26
+  },
+  {
+    "title": "How Learning Rate Decay Wastes Your Best Data in Curriculum-Based LLM Pretraining",
+    "file": "papers/2511.18903_How_Learning_Rate_Decay_Wastes_Your_Best_Data_in_Curriculum.pdf",
+    "arxiv_id": "2511.18903",
+    "year": 2025,
+    "authors": "Kairong Luo, Zhenbo Sun, Haodong Wen, Xinyu Shi, Jiarui Cui, Chenyi Dang, Kaifeng Lyu, Wenguang Chen",
+    "url": "https://api.semanticscholar.org/CorpusId:283243676",
+    "relevance": 3,
+    "abstract": "Due to the scarcity of high-quality data, large language models (LLMs) are often trained on mixtures of data with varying quality levels, even after sophisticated data curation. A natural approach to better leverage high-quality data is curriculum-based pretraining, where the model is trained on data sorted in ascending order of quality as determined by a quality metric. However, prior studies have reported limited improvements from such curriculum-based pretraining strategies. This work identifies a critical factor constraining these methods: the incompatibility between the ascending data quality order and the decaying learning rate (LR) schedule. We find that while curriculum-based training substantially outperforms random shuffling when using a constant LR, its advantage diminishes under standard LR decay schedules. Our experiments show this incompatibility can be mitigated by two simple strategies: (1) employing a more moderate LR decay schedule, where the final LR is only moderately smaller than the peak LR, and (2) replacing LR decay with model averaging, i.e., computing a weighted average of the final few checkpoints. By combining these strategies, we improve the average score on a suite of standard benchmarks by 1.64% over random shuffling, without additional data refinement. Validated on 1.5B-parameter models trained over 30B tokens with various data-quality metrics, our findings call for a re-evaluation of curriculum-based LLM pretraining and underscore the potential of co-designing data curricula with optimization methods.",
+    "citations": 3
+  },
+  {
+    "title": "Curriculum-Guided Layer Scaling for Language Model Pretraining",
+    "file": "papers/2506.11389_Curriculum_Guided_Layer_Scaling_for_Language_Model_Pretraini.pdf",
+    "arxiv_id": "2506.11389",
+    "year": 2025,
+    "authors": "Karanpartap Singh, Neil Band, Ehsan Adeli",
+    "url": "https://api.semanticscholar.org/CorpusId:279391223",
+    "relevance": 3,
+    "abstract": "As the cost of pretraining large language models grows, there is continued interest in strategies to improve learning efficiency during this core training stage. Motivated by cognitive development, where humans gradually build knowledge as their brains mature, we propose Curriculum-Guided Layer Scaling (CGLS), a framework for compute-efficient pretraining that synchronizes increasing data difficulty with model growth through progressive layer stacking (i.e. gradually adding layers during training). At the 100M parameter scale, using a curriculum transitioning from synthetic short stories to general web data, CGLS outperforms baseline methods on the question-answering benchmarks PIQA and ARC. Pretraining at the 1.2B scale, we stratify the DataComp-LM corpus with a DistilBERT-based classifier and progress from general text to highly technical or specialized content. Our results show that progressively increasing model depth alongside sample difficulty leads to better generalization and zero-shot performance on various downstream benchmarks. Altogether, our findings demonstrate that CGLS unlocks the potential of progressive stacking, offering a simple yet effective strategy for improving generalization on knowledge-intensive and reasoning tasks.",
+    "citations": 2
+  },
+  {
+    "title": "Focus on the Common Good: Group Distributional Robustness Follows",
+    "file": "papers/2110.02619_Focus_on_the_Common_Good_Group_Distributional_Robustness_Fol.pdf",
+    "arxiv_id": "2110.02619",
+    "year": 2021,
+    "authors": "Vihari Piratla, Praneeth Netrapalli, S. Sarawagi",
+    "url": "https://www.semanticscholar.org/paper/1e57462f93d78279549a8508e691dc4920151b35",
+    "relevance": 3,
+    "abstract": "We consider the problem of training a classification model with group annotated training data. Recent work has established that, if there is distribution shift across different groups, models trained using the standard empirical risk minimization (ERM) objective suffer from poor performance on minority groups and that group distributionally robust optimization (Group-DRO) objective is a better alternative. The starting point of this paper is the observation that though Group-DRO performs better than ERM on minority groups for some benchmark datasets, there are several other datasets where it performs much worse than ERM. Inspired by ideas from the closely related problem of domain generalization, this paper proposes a new and simple algorithm that explicitly encourages learning of features that are shared across various groups. The key insight behind our proposed algorithm is that while Group-DRO focuses on groups with worst regularized loss, focusing instead, on groups that enable better performance even on other groups, could lead to learning of shared/common features, thereby enhancing minority performance beyond what is achieved by Group-DRO. Empirically, we show that our proposed algorithm matches or achieves better performance compared to strong contemporary baselines including ERM and Group-DRO on standard benchmarks on both minority groups and across all groups. Theoretically, we show that the proposed algorithm is a descent method and finds first order stationary points of smooth nonconvex functions.",
+    "citations": 31
+  }
+]

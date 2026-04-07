@@ -1,0 +1,45 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Hypothesis Assessment}
+
+\para{H1 (Faster adaptation): Supported.} The curriculum model improves 2.8$\times$ faster on shift domains during adaptation (9.1 vs.\ 3.3 PPL points in 500 steps). This is the strongest and most practically relevant finding. A model that adapts faster to new domains requires less fine-tuning data and compute for domain specialization.
+
+\para{H2 (Convergence on shift domains): Partially refuted.} After the same total training budget, the curriculum model has not caught up on shift domains (PPL 59.7 vs.\ 48.2). The gap is narrowing during Phase~2 but does not close within 1{,}200 steps. Longer Phase~2 training or higher sampling weight for shift domains may be necessary.
+
+\para{H3 (Zero-shot transfer): Not supported.} ArXiv perplexity shows no significant difference between conditions (179.5 vs.\ 184.6, $p = 0.47$). The distribution shift curriculum does not improve generalization to domains never seen during training.
+
+\subsection{Why Does \dsc Improve Core Domains?}
+
+The most surprising result is that the curriculum model significantly outperforms the baseline on 5 of 9 core domains ($p < 0.05$), despite seeing identical amounts of core-domain data. We hypothesize three complementary mechanisms:
+
+\para{Concentrated learning.} In Phase~1, all gradient updates are concentrated on 9 core domains rather than spread across 12. This yields more gradient steps per domain, potentially finding better local optima for core-domain representations before the distribution shift introduces new competing gradients.
+
+\para{Reduced interference.} Simultaneous training on all domains creates inter-domain gradient interference. By separating the learning into phases, \dsc may reduce interference during the critical early stages of training when representations are most plastic.
+
+\para{Analogy to ``start simple.''} This result echoes the classical curriculum learning principle of starting with a simpler task distribution~\cite{bengio2009curriculum}. Training on fewer domains first may allow the model to develop more robust features before confronting the full data distribution.
+
+\subsection{Adaptation Speed Mechanism}
+
+The curriculum model's 2.8$\times$ faster adaptation to shift domains could arise from several factors. First, the stronger core-domain representations provide a better initialization for adaptation---features learned on core domains transfer more effectively when those features are themselves higher quality. Second, the model has already experienced one distribution shift (Phase~1 $\to$ Phase~2 transition) during training, which may implicitly prepare it for further shifts during adaptation. Third, the baseline model's representations may be more ``entrenched'' due to simultaneous optimization across all domains, making them harder to update.
+
+We cannot fully disentangle these explanations with the current experimental design. A factorial experiment varying Phase~1 domain count and Phase~2 duration would help isolate each mechanism.
+
+\subsection{Catastrophic Forgetting}
+
+Both models show increased ArXiv perplexity during shift-domain adaptation (expected, as ArXiv is never trained on), but the curriculum model degrades 26\% less ($-7.9$ vs.\ $-10.7$ PPL). While the sample size is too small for statistical significance, this tentatively suggests that \dsc confers some resistance to catastrophic forgetting. One possible explanation is that the Phase~1 $\to$ Phase~2 transition provides an implicit ``rehearsal'' of distributional robustness: the model learns to maintain core-domain performance while integrating new domains.
+
+\subsection{Limitations}
+\label{sec:limitations}
+
+\para{Scale.} Our experiments use 30M parameters and ${\sim}$6M training tokens, far below modern pretraining scale. Effects may differ---positively or negatively---at 1B+ parameters. Curriculum effects have been shown at 124M parameters~\cite{fan2023irreducible}, but whether domain-withholding curricula specifically scale remains unknown.
+
+\para{Statistical power.} We use only 3 random seeds per condition. While results are consistent (low standard deviations), more seeds would strengthen statistical conclusions, particularly for the held-out domain and forgetting analyses.
+
+\para{Single curriculum design.} We tested one Phase~1/Phase~2 split (60/40) with one domain partitioning. The optimal schedule, split ratio, and domain assignment are unexplored. Different choices could substantially change the results.
+
+\para{Perplexity only.} We measure perplexity as the sole metric. Downstream task performance (\eg MMLU, ARC) could show different patterns, and perplexity improvements do not always transfer to task accuracy~\cite{xie2023doremi}.
+
+\para{Learning rate schedule.} Following \citet{luo2025lrdecay}, we use constant learning rate with EMA. Interactions with cosine decay or warmup-stable-decay schedules, which are standard in large-scale pretraining, are untested.
+
+\para{Domain selection.} We chose shift domains to be diverse (legal, math, biomedical), but different shift-domain selections could yield different results. A systematic study of which domains benefit most from phased introduction would be valuable.

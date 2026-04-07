@@ -1,0 +1,15 @@
+PDF: papers/2511.18903_How_Learning_Rate_Decay_Wastes_Your_Best_Data_in_Curriculum.pdf
+Total pages: 28
+Pages per chunk: 3
+
+Chunks:
+  2511.18903_How_Learning_Rate_Decay_Wastes_Your_Best_Data_in_Curriculum_chunk_001.pdf: pages 1-3
+  2511.18903_How_Learning_Rate_Decay_Wastes_Your_Best_Data_in_Curriculum_chunk_002.pdf: pages 4-6
+  2511.18903_How_Learning_Rate_Decay_Wastes_Your_Best_Data_in_Curriculum_chunk_003.pdf: pages 7-9
+  2511.18903_How_Learning_Rate_Decay_Wastes_Your_Best_Data_in_Curriculum_chunk_004.pdf: pages 10-12
+  2511.18903_How_Learning_Rate_Decay_Wastes_Your_Best_Data_in_Curriculum_chunk_005.pdf: pages 13-15
+  2511.18903_How_Learning_Rate_Decay_Wastes_Your_Best_Data_in_Curriculum_chunk_006.pdf: pages 16-18
+  2511.18903_How_Learning_Rate_Decay_Wastes_Your_Best_Data_in_Curriculum_chunk_007.pdf: pages 19-21
+  2511.18903_How_Learning_Rate_Decay_Wastes_Your_Best_Data_in_Curriculum_chunk_008.pdf: pages 22-24
+  2511.18903_How_Learning_Rate_Decay_Wastes_Your_Best_Data_in_Curriculum_chunk_009.pdf: pages 25-27
+  2511.18903_How_Learning_Rate_Decay_Wastes_Your_Best_Data_in_Curriculum_chunk_010.pdf: page 28
